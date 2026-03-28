@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
-
+import { Component , ChangeDetectionStrategy} from '@angular/core';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-landing-page',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './landing-page.html',
   styleUrl: './landing-page.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
 
