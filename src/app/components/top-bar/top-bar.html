@@ -20,58 +20,73 @@
 
 
         <div class="hidden md:flex items-center gap-1">
-
-
-            <a href="#" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-semibold
-        text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
-        hover:text-blue-700 transition-all group">
-                <span
-                    class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">home</span>
+            <a [routerLink]="['/']" fragment="home" (click)="setActive('home')"
+                [attr.aria-current]="activeSection === 'home' ? 'page' : null"
+                [ngClass]="activeSection === 'home' ? 'text-blue-700' : 'text-gray-600'"
+                class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
                 Home
             </a>
 
-
-            <a href="#" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-bold
-        text-blue-700 bg-gradient-to-r from-blue-50 to-blue-100/50 transition-all group">
-                <span class="material-symbols-outlined text-[18px]">school</span>
-                Admissions
-                <span
-                    class="absolute bottom-0 left-3 right-3 h-[2px] bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></span>
+            <a [routerLink]="['/']" fragment="features" (click)="setActive('features')"
+                [attr.aria-current]="activeSection === 'features' ? 'page' : null"
+                [ngClass]="activeSection === 'features' ? 'text-blue-700' : 'text-gray-600'"
+                class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+                Features
             </a>
 
-            <a href="#" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-semibold
-        text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
-        hover:text-blue-700 transition-all group">
-                <span
-                    class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">library_books</span>
-                Programs
+            <a [routerLink]="['/']" fragment="campus" (click)="setActive('campus')"
+                [attr.aria-current]="activeSection === 'campus' ? 'page' : null"
+                [ngClass]="activeSection === 'campus' ? 'text-blue-700' : 'text-gray-600'"
+                class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+                Campus
             </a>
 
-            <a href="#" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-semibold
-        text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
-        hover:text-blue-700 transition-all group">
-                <span
-                    class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">info</span>
-                About
+            <a [routerLink]="['/']" fragment="roadmap" (click)="setActive('roadmap')"
+                [attr.aria-current]="activeSection === 'roadmap' ? 'page' : null"
+                [ngClass]="activeSection === 'roadmap' ? 'text-blue-700' : 'text-gray-600'"
+                class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+                Roadmap
             </a>
 
+            <a [routerLink]="['/']" fragment="apply" (click)="setActive('apply')"
+                [attr.aria-current]="activeSection === 'apply' ? 'page' : null"
+                [ngClass]="activeSection === 'apply' ? 'text-blue-700' : 'text-gray-600'"
+                class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+                Apply
+            </a>
         </div>
 
 
         <div class="flex items-center gap-2">
-            <button class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold
+            <button class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold
         text-blue-700 border border-blue-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100/50
-        hover:border-blue-300 hover:text-blue-800 transition-all duration-200">
-                <span class="material-symbols-outlined text-[18px]">person</span>
+        hover:border-blue-300 hover:text-blue-800 transition-all duration-200 focus-visible:outline-none
+        focus-visible:ring-2 focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
                 Login
             </button>
-            <button class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[13px] font-bold text-white
+            <a [routerLink]="['/']" fragment="apply"
+                class="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-bold text-white
         bg-gradient-to-br from-blue-600 to-blue-500 shadow-md shadow-blue-200/50
         hover:shadow-lg hover:shadow-blue-300/50 hover:-translate-y-px
-        active:scale-95 transition-all duration-200">
-                <span class="material-symbols-outlined text-[18px]">edit_document</span>
+        active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
                 Apply Now
-            </button>
+            </a>
         </div>
 
     </div>
