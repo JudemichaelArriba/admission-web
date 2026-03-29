@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ScrollRevealDirective } from '../../helpers/scroll-reveal/scroll-reveal';
 
 @Component({
-  selector: 'app-landing-roadmap',
+  selector: 'app-landing-courses',
   standalone: true,
   imports: [CommonModule, ScrollRevealDirective],
-  templateUrl: './landing-roadmap.html',
-  styleUrl: './landing-roadmap.css',
+  templateUrl: './landing-courses.html',
+  styleUrl: './landing-courses.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingRoadmap {}
+export class LandingCourses {}

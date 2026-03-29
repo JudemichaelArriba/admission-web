@@ -48,13 +48,13 @@
                 Campus
             </a>
 
-            <a [routerLink]="['/']" fragment="roadmap" (click)="setActive('roadmap')"
-                [attr.aria-current]="activeSection === 'roadmap' ? 'page' : null"
-                [ngClass]="activeSection === 'roadmap' ? 'text-blue-700' : 'text-gray-600'" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+            <a [routerLink]="['/']" fragment="courses" (click)="setActive('courses')"
+                [attr.aria-current]="activeSection === 'courses' ? 'page' : null"
+                [ngClass]="activeSection === 'courses' ? 'text-blue-700' : 'text-gray-600'" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
         hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
         hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
         focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
-                Roadmap
+                Courses
             </a>
 
             <a [routerLink]="['/']" fragment="apply" (click)="setActive('apply')"

@@ -23,7 +23,7 @@ export class TopBar implements AfterViewInit, OnDestroy {
   private removeListeners?: () => void;
   private readonly scrollThreshold = 8;
 
-  private readonly sectionIds = ['home', 'features', 'campus', 'roadmap', 'apply'];
+  private readonly sectionIds = ['home', 'features', 'campus', 'courses', 'apply'];
   private readonly markerOffset = 64;
 
   ngAfterViewInit(): void {

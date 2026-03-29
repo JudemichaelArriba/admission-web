@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { LandingHero } from '../../components/landing-hero/landing-hero';
 import { LandingFeatures } from '../../components/landing-features/landing-features';
 import { LandingCampus } from '../../components/landing-campus/landing-campus';
-import { LandingRoadmap } from '../../components/landing-roadmap/landing-roadmap';
+import { LandingCourses } from '../../components/landing-courses/landing-courses';
 import { LandingEnding } from '../../components/landing-ending/landing-ending';
 import { LandingFooter } from '../../components/landing-footer/landing-footer';
 @Component({
@@ -14,7 +14,7 @@ import { LandingFooter } from '../../components/landing-footer/landing-footer';
     LandingHero,
     LandingFeatures,
     LandingCampus,
-    LandingRoadmap,
+    LandingCourses,
     LandingEnding,
     LandingFooter,
   ],
