@@ -29,6 +29,15 @@
         focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
                 Home
             </a>
+            
+            <a [routerLink]="['/']" fragment="courses" (click)="setActive('courses')"
+                [attr.aria-current]="activeSection === 'courses' ? 'page' : null"
+                [ngClass]="activeSection === 'courses' ? 'text-blue-700' : 'text-gray-600'" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
+        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
+        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
+        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
+                Courses
+            </a>
 
             <a [routerLink]="['/']" fragment="features" (click)="setActive('features')"
                 [attr.aria-current]="activeSection === 'features' ? 'page' : null"
@@ -48,14 +57,7 @@
                 Campus
             </a>
 
-            <a [routerLink]="['/']" fragment="courses" (click)="setActive('courses')"
-                [attr.aria-current]="activeSection === 'courses' ? 'page' : null"
-                [ngClass]="activeSection === 'courses' ? 'text-blue-700' : 'text-gray-600'" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold
-        hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50
-        hover:text-blue-700 transition-all group focus-visible:outline-none focus-visible:ring-2
-        focus-visible:ring-blue-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white">
-                Courses
-            </a>
+
 
             <a [routerLink]="['/']" fragment="apply" (click)="setActive('apply')"
                 [attr.aria-current]="activeSection === 'apply' ? 'page' : null"
