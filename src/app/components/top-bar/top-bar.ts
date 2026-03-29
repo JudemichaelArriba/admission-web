@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 })
 export class TopBar implements AfterViewInit, OnDestroy {
   activeSection = 'home';
+  isScrolled = false;
 
   private readonly document = inject(DOCUMENT);
   private readonly zone = inject(NgZone);
@@ -20,6 +21,7 @@ export class TopBar implements AfterViewInit, OnDestroy {
   private sectionOffsets: Array<{ id: string; top: number }> = [];
   private rafId: number | null = null;
   private removeListeners?: () => void;
+  private readonly scrollThreshold = 8;
 
   private readonly sectionIds = ['home', 'features', 'campus', 'roadmap', 'apply'];
   private readonly markerOffset = 64;
@@ -48,6 +50,7 @@ export class TopBar implements AfterViewInit, OnDestroy {
         this.rafId = win.requestAnimationFrame(() => {
           this.rafId = null;
           this.updateActiveSectionFromScroll();
+          this.updateScrolledState();
         });
       };
 
@@ -123,6 +126,21 @@ export class TopBar implements AfterViewInit, OnDestroy {
     if (next !== this.activeSection) {
       this.zone.run(() => {
         this.activeSection = next;
+        this.cdr.markForCheck();
+      });
+    }
+  }
+
+  private updateScrolledState(): void {
+    const win = this.document.defaultView;
+    if (!win) {
+      return;
+    }
+
+    const next = win.scrollY > this.scrollThreshold;
+    if (next !== this.isScrolled) {
+      this.zone.run(() => {
+        this.isScrolled = next;
         this.cdr.markForCheck();
       });
     }
