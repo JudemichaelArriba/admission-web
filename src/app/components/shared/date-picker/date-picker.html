@@ -1,0 +1,98 @@
+<div class="relative w-full space-y-1">
+    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ label }}</label>
+
+    <div (click)="toggle()"
+        class="group w-full px-3 py-2.5 bg-white/5 border border-white/8 rounded-xl text-white text-sm cursor-pointer flex justify-between items-center transition-all duration-200"
+        [ngClass]="{'border-blue-500/60 ring-1 ring-blue-500/30': isOpen}">
+        <span [class.text-gray-600]="!value">{{ value || placeholder }}</span>
+        <svg class="w-4 h-4 text-gray-500 group-hover:text-blue-400 transition-colors" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+    </div>
+
+    @if (isOpen) {
+    <div class="absolute z-[100] w-72 p-4 bg-gray-950/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl animate-in fade-in duration-200"
+        [ngClass]="{'bottom-full mb-2': isDropdownAbove, 'top-full mt-2': !isDropdownAbove}">
+
+        <div class="flex items-center justify-between mb-4">
+            @if (viewMode === 'days') {
+            <button (click)="$event.stopPropagation(); changeMonth(-1)"
+                class="p-1 hover:bg-white/10 rounded-lg text-gray-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M15 19l-7-7 7-7" stroke-width="2" />
+                </svg>
+            </button>
+            } @else {
+            <div class="w-6"></div> }
+
+            <div (click)="$event.stopPropagation(); viewMode = viewMode === 'days' ? 'years' : 'days'"
+                class="text-xs font-bold text-white uppercase tracking-widest cursor-pointer hover:text-blue-400 transition-colors px-2 py-1 rounded-md hover:bg-white/5">
+                {{ months[displayMonth] }} {{ displayYear }}
+            </div>
+
+            @if (viewMode === 'days') {
+            <button (click)="$event.stopPropagation(); changeMonth(1)"
+                class="p-1 hover:bg-white/10 rounded-lg text-gray-400">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path d="M9 5l7 7-7 7" stroke-width="2" />
+                </svg>
+            </button>
+            } @else {
+            <div class="w-6"></div>
+            }
+        </div>
+
+        @if (viewMode === 'days') {
+        <div class="animate-in fade-in zoom-in-95 duration-200">
+            <div class="grid grid-cols-7 gap-1 text-center mb-2">
+                @for (dayName of ['Su','Mo','Tu','We','Th','Fr','Sa']; track dayName) {
+                <span class="text-[9px] font-black text-blue-500/50 uppercase">{{ dayName }}</span>
+                }
+            </div>
+            <div class="grid grid-cols-7 gap-1">
+                @for (day of days; track $index) {
+                <div (click)="$event.stopPropagation(); selectDate(day)"
+                    class="aspect-square flex items-center justify-center text-[11px] rounded-lg transition-all"
+                    [ngClass]="{
+                                'text-white hover:bg-blue-600 cursor-pointer': day && !isDateDisabled(day),
+                                'text-gray-700 cursor-not-allowed opacity-30': isDateDisabled(day),
+                                'bg-blue-500 shadow-lg shadow-blue-500/20 font-bold': day && value.endsWith('-' + (day < 10 ? '0'+day : day)),
+                                'pointer-events-none opacity-0': !day
+                            }">
+                    {{ day }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        @if (viewMode === 'months') {
+        <div class="grid grid-cols-3 gap-2 animate-in fade-in zoom-in-95 duration-200">
+            @for (m of months; track $index) {
+            <div (click)="$event.stopPropagation(); selectMonth($index)"
+                class="py-3 text-center text-xs font-bold rounded-xl cursor-pointer transition-all"
+                [ngClass]="$index === displayMonth ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'">
+                {{ m }}
+            </div>
+            }
+        </div>
+        }
+
+        @if (viewMode === 'years') {
+        <div
+            class="grid grid-cols-3 gap-2 h-48 overflow-y-auto pr-1 custom-scrollbar animate-in fade-in zoom-in-95 duration-200">
+            @for (y of years; track y) {
+            <div (click)="$event.stopPropagation(); selectYear(y)"
+                class="py-2 text-center text-[11px] font-bold rounded-lg cursor-pointer transition-all"
+                [ngClass]="y === displayYear ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'">
+                {{ y }}
+            </div>
+            }
+        </div>
+        }
+
+    </div>
+    }
+</div>
