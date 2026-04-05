@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -16,18 +16,20 @@ export class DatePickerComponent {
 
   isOpen = false;
   viewMode: 'days' | 'months' | 'years' = 'days';
+  isDropdownAbove = false;
 
   currentDate = new Date();
-  displayMonth: number = 0;
-  displayYear: number = 0;
+  displayMonth: number;
+  displayYear: number;
 
   days: (number | null)[] = [];
   months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   years: number[] = [];
 
-  isDropdownAbove = false;
-
-  constructor(private eRef: ElementRef) {
+  constructor(
+    private eRef: ElementRef, 
+    private cdr: ChangeDetectorRef 
+  ) {
     this.displayMonth = this.currentDate.getMonth();
     this.displayYear = this.currentDate.getFullYear();
     this.generateCalendar();
@@ -46,8 +48,32 @@ export class DatePickerComponent {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.viewMode = 'days';
-      setTimeout(() => this.checkSpace(), 0);
+      
+   
+      requestAnimationFrame(() => {
+        this.checkSpace();
+        this.cdr.detectChanges(); 
+      });
     }
+  }
+
+  private checkSpace() {
+    const hostElement = this.eRef.nativeElement;
+    const rect = hostElement.getBoundingClientRect();
+    const dropdownHeight = 360; 
+    
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    this.isDropdownAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
+  }
+
+  generateCalendar() {
+    const firstDay = new Date(this.displayYear, this.displayMonth, 1).getDay();
+    const daysInMonth = new Date(this.displayYear, this.displayMonth + 1, 0).getDate();
+    this.days = Array(firstDay).fill(null).concat(
+      Array.from({ length: daysInMonth }, (_, i) => i + 1)
+    );
   }
 
   generateYearList() {
@@ -62,21 +88,7 @@ export class DatePickerComponent {
     const limitDate = new Date(this.maxDate);
     limitDate.setHours(0, 0, 0, 0);
     cellDate.setHours(0, 0, 0, 0);
-    return cellDate >= limitDate; // Traps today and future
-  }
-
-  private checkSpace() {
-    const hostElement = this.eRef.nativeElement;
-    const rect = hostElement.getBoundingClientRect();
-    this.isDropdownAbove = (window.innerHeight - rect.bottom) < 340 && rect.top > 340;
-  }
-
-  generateCalendar() {
-    const firstDay = new Date(this.displayYear, this.displayMonth, 1).getDay();
-    const daysInMonth = new Date(this.displayYear, this.displayMonth + 1, 0).getDate();
-    this.days = Array(firstDay).fill(null).concat(
-      Array.from({ length: daysInMonth }, (_, i) => i + 1)
-    );
+    return cellDate > limitDate; 
   }
 
   selectYear(year: number) {
