@@ -152,16 +152,30 @@
                             class="w-full px-3 py-2.5 bg-white/5 border border-white/8 rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30 transition-all duration-200 resize-none"></textarea>
                     </div>
                     <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Intended
-                            Program</label>
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                            Intended Program
+                        </label>
                         <div class="relative">
                             <select
                                 class="w-full px-3 py-2.5 bg-gray-900 border border-white/8 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30 transition-all duration-200 appearance-none cursor-pointer">
+
+                                @if (isLoading) {
+                                <option disabled selected>Loading programs...</option>
+                                } @else {
                                 <option value="" disabled selected class="text-gray-500">Select a program</option>
-                                <option>BS in Information Technology</option>
-                                <option>BS in Computer Science</option>
-                                <option>BS in Business Administration</option>
+
+                                @for (course of courses; track course.id) {
+                                <option [value]="course.course_code">
+                                    {{ course.course_name }} ({{ course.course_code }})
+                                </option>
+                                }
+
+                                @if (courses.length === 0) {
+                                <option disabled>No active programs available</option>
+                                }
+                                }
                             </select>
+
                             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                                 <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
