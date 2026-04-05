@@ -6,7 +6,6 @@ import {
   FormGroup,
   Validators,
   AbstractControl,
-  ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize, switchMap } from 'rxjs';
@@ -15,25 +14,11 @@ import { AuthService } from '../../services/auth.service';
 import { DocumentService } from '../../services/document.service';
 import { DialogService } from '../../services/dialog.service';
 import { Course } from '../../models/course.model';
+import { SignupPayload } from '../../models/auth.model';
+import { DropdownOption } from '../../models/dropdown.model';
+import { CustomValidators } from '../../utils/validators';
 import { DatePickerComponent } from '../../components/shared/date-picker/date-picker';
 import { DropdownComponent } from '../../components/shared/drop-down/drop-down';
-import { DropdownOption } from '../../models/dropdown.model';
-
-
-
-function passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const pw = group.get('password')?.value;
-  const confirm = group.get('password_confirmation')?.value;
-  return pw && confirm && pw !== confirm ? { passwordMismatch: true } : null;
-}
-
-function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
-  const v = control.value ?? '';
-  if (!v) return null;
-  const hasLetter = /[a-zA-Z]/.test(v);
-  const hasNumber = /[0-9]/.test(v);
-  return hasLetter && hasNumber ? null : { passwordStrength: true };
-}
 
 @Component({
   selector: 'app-register-page',
@@ -62,8 +47,9 @@ export class RegisterPage implements OnInit {
   today = new Date().toISOString().split('T')[0];
   form: FormGroup;
 
+
   private readonly stepFields: Record<number, string[]> = {
-    1: ['first_name', 'last_name', 'phone_number'],
+    1: ['first_name', 'last_name', 'phone_number', 'date_of_birth'],
     2: ['address', 'course_id'],
     3: ['email', 'password', 'password_confirmation'],
   };
@@ -81,16 +67,16 @@ export class RegisterPage implements OnInit {
         first_name: ['', [Validators.required, Validators.maxLength(100)]],
         last_name: ['', [Validators.required, Validators.maxLength(100)]],
         middle_name: ['', Validators.maxLength(100)],
-        date_of_birth: [''],
-        phone_number: ['', Validators.pattern(/^[0-9+\-\s]{7,20}$/)],
+        date_of_birth: ['', Validators.required],
+        phone_number: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s]{7,20}$/)]],
         address: ['', [Validators.required, Validators.maxLength(500)]],
         course_id: [null, Validators.required],
         email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
-        password: ['', [Validators.required, Validators.minLength(8), passwordStrengthValidator]],
+        password: ['', [Validators.required, Validators.minLength(8), CustomValidators.passwordStrength]],
         password_confirmation: ['', Validators.required],
         certify: [false, Validators.requiredTrue],
       },
-      { validators: passwordMatchValidator },
+      { validators: CustomValidators.passwordMatch },
     );
   }
 
@@ -103,8 +89,8 @@ export class RegisterPage implements OnInit {
     this.courseService.getActiveCourses()
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
-        next: data => this.courses = data || [],
-        error: () => this.dialog.error('Failed to load courses', 'Could not fetch available programs.'),
+        next: data => (this.courses = data || []),
+        error: () => this.dialog.error('Error', 'Could not fetch programs.'),
       });
   }
 
@@ -123,6 +109,7 @@ export class RegisterPage implements OnInit {
 
   onDateChange(date: string): void {
     this.form.patchValue({ date_of_birth: date });
+    this.form.get('date_of_birth')!.markAsTouched();
   }
 
   onFileSelected(event: Event): void {
@@ -132,11 +119,11 @@ export class RegisterPage implements OnInit {
     if (!file) return;
 
     if (!this.ALLOWED_MIME.includes(file.type)) {
-      this.fileError = 'Only PNG, JPG, or PDF files are accepted.';
+      this.fileError = 'Invalid format. Use PNG, JPG, or PDF.';
       return;
     }
     if (file.size > this.MAX_FILE_BYTES) {
-      this.fileError = 'File must be 5 MB or smaller.';
+      this.fileError = 'File size exceeds 5MB.';
       return;
     }
     this.selectedFile = file;
@@ -144,10 +131,15 @@ export class RegisterPage implements OnInit {
 
   nextStep(): void {
     const fields = this.stepFields[this.currentStep] ?? [];
-    fields.forEach(f => this.form.get(f)!.markAsTouched());
-    const stepInvalid = fields.some(f => this.form.get(f)!.invalid);
-    const mismatch = this.currentStep === 3 && this.form.hasError('passwordMismatch');
-    if (stepInvalid || mismatch) return;
+    fields.forEach(f => {
+      const ctrl = this.form.get(f);
+      if (ctrl) ctrl.markAsTouched();
+    });
+
+    const isStepInvalid = fields.some(f => this.form.get(f)?.invalid);
+    const hasMismatch = this.currentStep === 3 && this.form.hasError('passwordMismatch');
+
+    if (isStepInvalid || hasMismatch) return;
     if (this.currentStep < 4) this.currentStep++;
   }
 
@@ -159,7 +151,7 @@ export class RegisterPage implements OnInit {
     if (this.isSubmitting) return;
 
     if (!this.selectedFile) {
-      this.fileError = 'Please upload your Birth Certificate.';
+      this.fileError = 'Birth Certificate is required.';
       return;
     }
 
@@ -169,12 +161,12 @@ export class RegisterPage implements OnInit {
     this.isSubmitting = true;
 
     const v = this.form.value;
-    const payload = {
+    const payload: SignupPayload = {
       first_name: v.first_name.trim(),
       last_name: v.last_name.trim(),
-      ...(v.middle_name?.trim() ? { middle_name: v.middle_name.trim() } : {}),
-      ...(v.date_of_birth ? { date_of_birth: v.date_of_birth } : {}),
-      ...(v.phone_number?.trim() ? { phone_number: v.phone_number.trim() } : {}),
+      middle_name: v.middle_name?.trim() || undefined,
+      date_of_birth: v.date_of_birth,
+      phone_number: v.phone_number?.trim() || undefined,
       address: v.address.trim(),
       course_id: Number(v.course_id),
       email: v.email.trim().toLowerCase(),
@@ -187,47 +179,43 @@ export class RegisterPage implements OnInit {
         const applicantId = res.applicant?.id ?? res.applicant_id ?? 0;
         return this.documentService.upload(applicantId, this.selectedFile!, 'birth_certificate');
       }),
-      finalize(() => {
-        this.isSubmitting = false;
-      })
+      finalize(() => (this.isSubmitting = false))
     ).subscribe({
       next: () => {
-        this.dialog.success(
-          'Application Submitted!',
-          'Your application has been received. You will be notified once it is reviewed.'
-        );
-
+        this.dialog.success('Success', 'Application submitted successfully!');
+        this.router.navigate(['/login']);
       },
-      error: err => {
-        const body = err?.error;
-        if (body?.errors) {
-          const msgs: string[] = Object.values<string[]>(body.errors).flat();
-          const fieldStepMap: Record<string, number> = {
-            first_name: 1, last_name: 1, middle_name: 1, date_of_birth: 1, phone_number: 1,
-            address: 2, course_id: 2,
-            email: 3, password: 3, password_confirmation: 3,
-          };
-          const firstErrorField = Object.keys(body.errors)[0];
-          const targetStep = fieldStepMap[firstErrorField];
-          if (targetStep) this.currentStep = targetStep;
-          this.dialog.error('Please check your details', msgs.join('\n'));
-        } else if (err?.status === 409) {
-          this.dialog.error('Already Registered', 'An account with this email already exists.');
-        } else {
-          this.dialog.error('Registration Failed', body?.message ?? 'Something went wrong.');
-        }
-      },
+      error: err => this.handleRegistrationError(err)
     });
+  }
+
+  private handleRegistrationError(err: any): void {
+    const errorBody = err?.error;
+    if (errorBody?.errors) {
+      const fieldStepMap: Record<string, number> = {
+        first_name: 1, last_name: 1, middle_name: 1, date_of_birth: 1, phone_number: 1,
+        address: 2, course_id: 2,
+        email: 3, password: 3, password_confirmation: 3,
+      };
+
+      const firstField = Object.keys(errorBody.errors)[0];
+      if (fieldStepMap[firstField]) this.currentStep = fieldStepMap[firstField];
+
+      const messages = Object.values<string[]>(errorBody.errors).flat().join('\n');
+      this.dialog.error('Validation Error', messages);
+    } else {
+      this.dialog.error('Error', errorBody?.message || 'Registration failed.');
+    }
   }
 
   f(name: string): AbstractControl { return this.form.get(name)!; }
 
   hasErr(name: string, error: string): boolean {
-    const c = this.form.get(name)!;
-    return c.touched && c.hasError(error);
+    const ctrl = this.form.get(name);
+    return !!(ctrl?.touched && ctrl?.hasError(error));
   }
 
   get passwordMismatch(): boolean {
-    return !!this.form.get('password_confirmation')?.touched && this.form.hasError('passwordMismatch');
+    return !!(this.form.get('password_confirmation')?.touched && this.form.hasError('passwordMismatch'));
   }
 }

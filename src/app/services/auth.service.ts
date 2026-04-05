@@ -4,8 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';
 import { Applicant } from '../models/applicant.model';
-import { SignupPayload } from '../models/auth-payload.model';
-import { AuthResponse } from '../models/auth-response.model';
+import { SignupPayload, AuthResponse } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

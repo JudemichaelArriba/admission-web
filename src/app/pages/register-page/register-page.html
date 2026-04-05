@@ -113,8 +113,10 @@
                         <app-date-picker label="Date of Birth" placeholder="Select birthday" [maxDate]="today"
                             (valueChange)="onDateChange($event)">
                         </app-date-picker>
+                        @if (hasErr('date_of_birth', 'required')) {
+                        <p class="text-red-400 text-[10px] mt-0.5">Required</p>
+                        }
                     </div>
-
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Phone</label>
                         <input formControlName="phone_number" type="tel" placeholder="09XX XXX XXXX"
