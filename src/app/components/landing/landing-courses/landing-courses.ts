@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ScrollRevealDirective } from '../../helpers/scroll-reveal/scroll-reveal';
+import { ScrollRevealDirective } from '../../../helpers/scroll-reveal/scroll-reveal';
 
 @Component({
-  selector: 'app-landing-campus',
+  selector: 'app-landing-courses',
   standalone: true,
   imports: [CommonModule, ScrollRevealDirective],
-  templateUrl: './landing-campus.html',
-  styleUrl: './landing-campus.css',
+  templateUrl: './landing-courses.html',
+  styleUrl: './landing-courses.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LandingCampus {}
+export class LandingCourses {}

@@ -1,0 +1,16 @@
+<div class="min-h-screen bg-slate-50">
+    <app-dashboard-header></app-dashboard-header>
+
+    <app-applicants-tabs [activeTab]="activeTab" (tabChange)="activeTab = $event">
+    </app-applicants-tabs>
+
+    <main class="max-w-7xl mx-auto px-8 py-10">
+        <div *ngIf="activeTab === 'status'">
+            <app-status-table></app-status-table>
+        </div>
+
+        <div *ngIf="activeTab === 'documents'" class="py-24 text-center">
+        </div>
+
+    </main>
+</div>
