@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LandingHero } from '../../components/landing-hero/landing-hero';
-import { LandingFeatures } from '../../components/landing-features/landing-features';
-import { LandingCampus } from '../../components/landing-campus/landing-campus';
-import { LandingCourses } from '../../components/landing-courses/landing-courses';
-import { LandingEnding } from '../../components/landing-ending/landing-ending';
-import { LandingFooter } from '../../components/landing-footer/landing-footer';
+import { LandingHero } from '../../components/landing/landing-hero/landing-hero';
+import { LandingFeatures } from '../../components/landing/landing-features/landing-features';
+import { LandingCampus } from '../../components/landing/landing-campus/landing-campus';
+import { LandingCourses } from '../../components/landing/landing-courses/landing-courses';
+import { LandingEnding } from '../../components/landing/landing-ending/landing-ending';
+import { LandingFooter } from '../../components/landing/landing-footer/landing-footer';
 @Component({
   selector: 'app-landing-page',
   standalone: true,

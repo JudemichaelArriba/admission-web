@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TopBar } from '../../components/top-bar/top-bar';
+import { TopBar } from '../../components/landing/top-bar/top-bar';
 
 
 
