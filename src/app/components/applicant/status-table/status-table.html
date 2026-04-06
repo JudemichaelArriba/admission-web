@@ -1,29 +1,56 @@
-<div class="overflow-x-auto bg-white rounded-lg border border-gray-200">
+<div class="overflow-x-auto bg-white rounded-[2rem] border border-slate-200 shadow-sm">
     <table class="w-full text-left border-collapse">
         <thead>
-            <tr class="bg-gray-50 border-b-2 border-red-600">
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">No.</th>
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Type</th>
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Name</th>
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Schedule</th>
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase text-center">Registration Status</th>
-                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test ID Slip</th>
+            <tr class="bg-slate-50 border-b-2 border-blue-600">
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">No.</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Email Address</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Applicant Name</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Course Applied</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">
+                    Application Status
+                </th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let item of registrations; let i = index"
-                class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-200">
+                <td class="px-5 py-4 text-sm font-medium text-slate-600">{{ i + 1 }}</td>
+                <td class="px-5 py-4 text-sm text-slate-600">{{ item.email }}</td>
+                <td class="px-5 py-4 text-sm font-bold text-blue-950">
+                    {{ item.first_name }} {{ item.last_name }}
+                </td>
+                <td class="px-5 py-4 text-sm text-slate-600">
+                    {{ item.course?.course_name || 'N/A' }}
+                </td>
+                <td class="px-5 py-4 text-center">
+                    <span [ngClass]="{
+                        'bg-amber-50 text-amber-600 border-amber-100': item.status === 'pending',
+                        'bg-emerald-50 text-emerald-600 border-emerald-100': item.status === 'approved',
+                        'bg-rose-50 text-rose-600 border-rose-100': item.status === 'rejected',
+                        'bg-blue-50 text-blue-600 border-blue-100': item.status === 'enrolled'
+                    }" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
+                        {{ item.status }}
+                    </span>
+                </td>
             </tr>
 
             <tr *ngIf="registrations.length === 0">
-                <td colspan="6" class="py-20 text-center">
-                    <p class="text-2xl font-bold text-gray-800">No data.</p>
+                <td colspan="5" class="py-24 text-center">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
+                            <span class="material-symbols-outlined text-3xl">inbox</span>
+                        </div>
+                        <p class="text-lg font-bold text-blue-950">No records found.</p>
+                        <p class="text-sm text-slate-400 font-medium">You have no registration records at this time.</p>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
-<p class="mt-4 text-[11px] text-gray-500">
-    <span class="text-red-500">※</span> Click the Test Name to edit information or cancel the registration.
-    <span class="text-red-500 underline cursor-pointer ml-1">[View Refund Policy]</span>
+
+<p class="mt-4 text-[11px] text-gray-500 px-2">
+    <span class="text-blue-500 font-bold">Note:</span> If your status is <span
+        class="text-amber-600 font-semibold">pending</span>, please wait for the admissions office to review your
+    documents.
 </p>
