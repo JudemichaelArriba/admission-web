@@ -1,1 +1,31 @@
-<p>applicants-dashbaord works!</p>
+<div class="min-h-screen bg-white">
+    <app-dashboard-header></app-dashboard-header>
+
+    <main class="max-w-7xl mx-auto px-8 py-10">
+
+        <div class="flex border-b border-gray-200 mb-8 space-x-8">
+            <button (click)="activeTab = 'status'" [class.border-red-600]="activeTab === 'status'"
+                [class.text-red-600]="activeTab === 'status'"
+                class="pb-4 px-2 text-sm font-bold border-b-2 transition-all">
+                Registration List
+            </button>
+            <button (click)="activeTab = 'score'" [class.border-red-600]="activeTab === 'score'"
+                class="pb-4 px-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700">
+                Score & Certificate
+            </button>
+            <button (click)="activeTab = 'inquiry'"
+                class="pb-4 px-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700">
+                My Inquiry
+            </button>
+        </div>
+
+        <div *ngIf="activeTab === 'status'">
+            <app-status-table></app-status-table>
+        </div>
+
+        <div *ngIf="activeTab === 'score'" class="py-20 text-center text-gray-400">
+            Scores will be available after the examination period.
+        </div>
+
+    </main>
+</div>

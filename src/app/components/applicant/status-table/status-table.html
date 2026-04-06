@@ -1,0 +1,29 @@
+<div class="overflow-x-auto bg-white rounded-lg border border-gray-200">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-gray-50 border-b-2 border-red-600">
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">No.</th>
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Type</th>
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Name</th>
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test Schedule</th>
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase text-center">Registration Status</th>
+                <th class="px-4 py-3 text-[12px] font-bold text-gray-700 uppercase">Test ID Slip</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of registrations; let i = index"
+                class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            </tr>
+
+            <tr *ngIf="registrations.length === 0">
+                <td colspan="6" class="py-20 text-center">
+                    <p class="text-2xl font-bold text-gray-800">No data.</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<p class="mt-4 text-[11px] text-gray-500">
+    <span class="text-red-500">※</span> Click the Test Name to edit information or cancel the registration.
+    <span class="text-red-500 underline cursor-pointer ml-1">[View Refund Policy]</span>
+</p>

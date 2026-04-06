@@ -46,7 +46,7 @@ export class LoginPage {
             if (res.user.role === 'admin') {
               // this.router.navigate(['/admin/dashboard']);
             } else {
-              // this.router.navigate(['/applicant/dashboard']);
+              this.router.navigate(['/applicant/dashboard']);
             }
           }
         );
