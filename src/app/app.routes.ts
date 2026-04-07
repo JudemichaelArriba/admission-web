@@ -5,6 +5,7 @@ import { RegisterPage } from './pages/register-page/register-page';
 import { LoginPage } from './pages/login-page/login-page';
 import { authGuard } from './guards/auth-guard/auth-guard';
 import { ApplicantDashboardComponent } from './pages/applicants/applicants-dashbaord/applicants-dashbaord';
+import { StatusTableComponent } from './components/applicant/status-table/status-table';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPage },
@@ -25,7 +26,7 @@ export const routes: Routes = [
     {
         path: 'admin',
         canActivate: [authGuard],
-        data: { roles: ['admin'] }, 
+        data: { roles: ['admin'] },
         children: [
 
 
@@ -38,8 +39,14 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { roles: ['applicant'] },
         children: [
-            { path: 'dashboard', component: ApplicantDashboardComponent }
-
+            {
+                path: 'dashboard',
+                component: ApplicantDashboardComponent,
+                children: [
+                    { path: '', redirectTo: 'status', pathMatch: 'full' },
+                    { path: 'status', component: StatusTableComponent },
+                ]
+            }
         ]
     },
 

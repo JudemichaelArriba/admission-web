@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PublicLayout } from './public-layout';
+import { ExamSchedTable } from './exam-sched-table';
 
-describe('PublicLayout', () => {
-  let component: PublicLayout;
-  let fixture: ComponentFixture<PublicLayout>;
+describe('ExamSchedTable', () => {
+  let component: ExamSchedTable;
+  let fixture: ComponentFixture<ExamSchedTable>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PublicLayout]
+      imports: [ExamSchedTable]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(PublicLayout);
+    fixture = TestBed.createComponent(ExamSchedTable);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
