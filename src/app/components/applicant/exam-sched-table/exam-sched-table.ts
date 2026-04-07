@@ -63,7 +63,8 @@ export class ExamSchedTable implements OnInit {
 
   private toDate(value?: string | null): Date | null {
     if (!value) return null;
-    const normalized = value.includes(' ') ? value.replace(' ', 'T') : value;
+    const normalized = value.replace(' ', 'T');
+
     const date = new Date(normalized);
     return Number.isNaN(date.getTime()) ? null : date;
   }
