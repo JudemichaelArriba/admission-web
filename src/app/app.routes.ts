@@ -6,6 +6,7 @@ import { LoginPage } from './pages/login-page/login-page';
 import { authGuard } from './guards/auth-guard/auth-guard';
 import { ApplicantDashboardComponent } from './pages/applicants/applicants-dashbaord/applicants-dashbaord';
 import { StatusTableComponent } from './components/applicant/status-table/status-table';
+import { ExamSchedTable } from './components/applicant/exam-sched-table/exam-sched-table';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPage },
@@ -45,6 +46,7 @@ export const routes: Routes = [
                 children: [
                     { path: '', redirectTo: 'status', pathMatch: 'full' },
                     { path: 'status', component: StatusTableComponent },
+                    { path: 'schedule', component: ExamSchedTable },
                 ]
             }
         ]
