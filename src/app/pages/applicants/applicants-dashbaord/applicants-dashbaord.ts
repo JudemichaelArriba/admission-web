@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router'; 
+import { RouterOutlet } from '@angular/router';
 import { DashboardHeader } from '../../../components/applicant/dashboard-header/dashboard-header';
 import { ApplicantsTabsComponent } from '../../../components/applicant/applicants-tabs/applicants-tabs';
 
