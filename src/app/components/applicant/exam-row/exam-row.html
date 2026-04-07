@@ -1,0 +1,16 @@
+<td class="px-5 py-4 text-sm font-medium text-slate-600">{{ exam.id }}</td>
+<td class="px-5 py-4 text-sm text-slate-600">
+    {{ exam.examDate ? (exam.examDate | date:'mediumDate') : '—' }}
+</td>
+<td class="px-5 py-4 text-sm text-slate-600">
+    {{ exam.examEndTime ? (exam.examEndTime | date:'shortTime') : '—' }}
+</td>
+<td class="px-5 py-4 text-sm text-slate-600">{{ exam.room || '—' }}</td>
+<td class="px-5 py-4 text-center">
+    <span [ngClass]="{
+      'bg-blue-50 text-blue-600 border-blue-100': exam.status === 'scheduled',
+      'bg-emerald-50 text-emerald-600 border-emerald-100': exam.status === 'evaluated'
+    }" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
+        {{ exam.status || 'scheduled' }}
+    </span>
+</td>
