@@ -1,14 +1,22 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 import { DashboardHeader } from '../../../components/applicant/dashboard-header/dashboard-header';
-import { StatusTableComponent } from '../../../components/applicant/status-table/status-table';
 import { ApplicantsTabsComponent } from '../../../components/applicant/applicants-tabs/applicants-tabs';
+
 @Component({
   selector: 'app-applicant-dashboard',
   standalone: true,
-  imports: [CommonModule, DashboardHeader, StatusTableComponent, ApplicantsTabsComponent],
-  templateUrl: './applicants-dashbaord.html',
+  imports: [DashboardHeader, ApplicantsTabsComponent, RouterOutlet],
+  template: `
+    <div class="min-h-screen bg-slate-50">
+        <app-dashboard-header></app-dashboard-header>
+
+        <app-applicants-tabs></app-applicants-tabs>
+
+        <main class="max-w-7xl mx-auto px-8 py-10">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+  `,
 })
-export class ApplicantDashboardComponent {
-  activeTab = 'status';
-}
+export class ApplicantDashboardComponent { }

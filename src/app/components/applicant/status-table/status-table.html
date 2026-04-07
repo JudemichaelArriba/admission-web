@@ -12,29 +12,25 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let item of registrations; let i = index"
-                class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-200">
-                <td class="px-5 py-4 text-sm font-medium text-slate-600">{{ i + 1 }}</td>
-                <td class="px-5 py-4 text-sm text-slate-600">{{ item.email }}</td>
-                <td class="px-5 py-4 text-sm font-bold text-blue-950">
-                    {{ item.first_name }} {{ item.last_name }}
-                </td>
-                <td class="px-5 py-4 text-sm text-slate-600">
-                    {{ item.course?.course_name || 'N/A' }}
-                </td>
-                <td class="px-5 py-4 text-center">
-                    <span [ngClass]="{
-                        'bg-amber-50 text-amber-600 border-amber-100': item.status === 'pending',
-                        'bg-emerald-50 text-emerald-600 border-emerald-100': item.status === 'approved',
-                        'bg-rose-50 text-rose-600 border-rose-100': item.status === 'rejected',
-                        'bg-blue-50 text-blue-600 border-blue-100': item.status === 'enrolled'
-                    }" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
-                        {{ item.status }}
-                    </span>
+            <tr *ngIf="isLoading">
+                <td colspan="5" class="py-12 text-center">
+                    <span class="inline-block h-6 w-6 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin"></span>
                 </td>
             </tr>
 
-            <tr *ngIf="registrations.length === 0">
+            <tr *ngIf="!isLoading && errorMessage">
+                <td colspan="5" class="py-12 text-center text-rose-500 text-sm font-medium">
+                    {{ errorMessage }}
+                </td>
+            </tr>
+
+            <tr app-applicants-card *ngFor="let item of registrations; let i = index; trackBy: trackByApplicantId"
+                [applicant]="item"
+                [index]="i"
+                class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-200">
+            </tr>
+
+            <tr *ngIf="!isLoading && !errorMessage && registrations.length === 0">
                 <td colspan="5" class="py-24 text-center">
                     <div class="flex flex-col items-center gap-3">
                         <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">

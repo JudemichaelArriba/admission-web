@@ -1,3 +1,5 @@
+import { Course } from "./course.model";
+
 export interface Applicant {
   id: number;
   user_id: number;
@@ -9,6 +11,7 @@ export interface Applicant {
   date_of_birth?: string | null;
   address?: string | null;
   course_id: number;
+  course?: Course;
   status?: 'pending' | 'approved' | 'rejected' | 'enrolled';
   created_at?: string;
   updated_at?: string;
