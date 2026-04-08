@@ -1,3 +1,15 @@
+<div class="flex justify-between items-center mb-6 px-2">
+    <div>
+        <h2 class="text-2xl font-bold text-blue-950">My Documents</h2>
+        <p class="text-sm text-slate-500 font-medium">Manage your requirements and files</p>
+    </div>
+    <button (click)="showModal = true"
+        class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+        <span class="material-symbols-outlined !text-[20px]">add_circle</span>
+        Add Document
+    </button>
+</div>
+
 <div class="overflow-x-auto bg-white rounded-[2rem] border border-slate-200 shadow-sm">
     <table class="w-full text-left border-collapse">
         <thead>
@@ -36,7 +48,8 @@
                             <span class="material-symbols-outlined text-3xl">folder_open</span>
                         </div>
                         <p class="text-lg font-bold text-blue-950">No documents found.</p>
-                        <p class="text-sm text-slate-400 font-medium">You have no uploaded documents yet.</p>
+                        <p class="text-sm text-slate-400 font-medium">Click the button above to upload your first
+                            document.</p>
                     </div>
                 </td>
             </tr>
@@ -44,45 +57,6 @@
     </table>
 </div>
 
-<div class="mt-6 overflow-x-auto bg-white rounded-[2rem] border border-slate-200 shadow-sm">
-    <form [formGroup]="form" (ngSubmit)="onUpload()">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 border-b-2 border-blue-600">
-                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Upload New
-                        Document</th>
-                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Type</th>
-                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">File</th>
-                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">
-                        Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="px-5 py-4 text-sm text-slate-600">Choose a document type and file.</td>
-
-                    <td class="px-5 py-4">
-                        <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
-                            formControlName="document_type">
-                            <option value="" disabled>Select type</option>
-                            <option *ngFor="let t of DOCUMENT_TYPES" [value]="t">{{ t }}</option>
-                        </select>
-                    </td>
-
-                    <td class="px-5 py-4">
-                        <input type="file" class="block w-full text-sm text-slate-500" (change)="onFileSelected($event)"
-                            accept="application/pdf,image/jpeg,image/png" />
-                        <div *ngIf="fileError" class="text-[11px] text-rose-500 mt-1">{{ fileError }}</div>
-                    </td>
-
-                    <td class="px-5 py-4 text-right">
-                        <button type="submit" [disabled]="isUploading"
-                            class="px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
-                            {{ isUploading ? 'Uploading...' : 'Upload' }}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </form>
-</div>
+<app-document-modal *ngIf="showModal && applicantId" [applicantId]="applicantId" [existingTypes]="getUploadedTypeKeys()"
+    (closed)="showModal = false" (uploaded)="onUploadSuccess($event)">
+</app-document-modal>

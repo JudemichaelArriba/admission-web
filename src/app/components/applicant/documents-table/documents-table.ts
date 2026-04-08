@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { DocumentService } from '../../../services/document.service';
 import { AuthService } from '../../../services/auth.service';
@@ -8,11 +7,12 @@ import { ApplicantService } from '../../../services/applicants.service';
 import { ApplicantDocument } from '../../../models/applicant-document.model';
 import { DocumentRow } from '../../../models/document-row.model';
 import { DocumentRowComponent } from '../document-row/document-row';
+import { DocumentModal } from '../document-modal/document-modal';
 
 @Component({
   selector: 'app-documents-table',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DocumentRowComponent],
+  imports: [CommonModule, DocumentRowComponent, DocumentModal],
   templateUrl: './documents-table.html',
   styleUrl: './documents-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,36 +21,21 @@ export class DocumentsTableComponent implements OnInit {
   private readonly documentService = inject(DocumentService);
   private readonly authService = inject(AuthService);
   private readonly applicantService = inject(ApplicantService);
-  private readonly fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
 
   documents: DocumentRow[] = [];
   isLoading = true;
-  isUploading = false;
   errorMessage = '';
-  fileError = '';
-
-  private applicantId: number | null = null;
-
-  readonly MAX_FILE_BYTES = 5 * 1024 * 1024;
-  readonly ALLOWED_MIME = ['image/png', 'image/jpeg', 'application/pdf'];
-
-  // Update with values allowed by UploadApplicantDocumentRequest
-  readonly DOCUMENT_TYPES = [
-    'birth_certificate',
-    'report_card',
-    'good_moral',
-    'transcript'
-  ];
-
-  form = this.fb.group({
-    document_type: ['', Validators.required],
-  });
-
-  selectedFile: File | null = null;
+  showModal = false;
+  applicantId: number | null = null;
 
   ngOnInit(): void {
     this.resolveApplicantIdAndLoad();
+  }
+
+
+  getUploadedTypeKeys(): string[] {
+    return this.documents.map(doc => doc.rawType || '');
   }
 
   private resolveApplicantIdAndLoad(): void {
@@ -96,110 +81,45 @@ export class DocumentsTableComponent implements OnInit {
       });
   }
 
-  onFileSelected(event: Event): void {
-    this.fileError = '';
-    this.selectedFile = null;
-
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    if (!this.ALLOWED_MIME.includes(file.type)) {
-      this.fileError = 'Invalid format. Use PNG, JPG, or PDF.';
-      return;
-    }
-    if (file.size > this.MAX_FILE_BYTES) {
-      this.fileError = 'File size exceeds 5MB.';
-      return;
-    }
-
-    this.selectedFile = file;
+  onUploadSuccess(newDoc: ApplicantDocument): void {
+    this.documents = [this.toRow(newDoc), ...this.documents];
+    this.showModal = false;
+    this.cdr.markForCheck();
   }
 
-  onUpload(): void {
-    if (this.isUploading || !this.applicantId) return;
+  onOpenDocument(doc: DocumentRow): void {
+    if (!this.applicantId) return;
 
-    this.fileError = '';
-    if (!this.selectedFile) {
-      this.fileError = 'Please select a file.';
-      return;
-    }
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.isUploading = true;
-
-    const type = this.form.value.document_type!;
-    this.documentService.upload(this.applicantId, this.selectedFile, type)
-      .pipe(finalize(() => {
-        this.isUploading = false;
-        this.cdr.markForCheck();
-      }))
-      .subscribe({
-        next: (doc) => {
-          this.documents = [this.toRow(doc), ...this.documents];
-          this.form.reset();
-          this.selectedFile = null;
-        },
-        error: () => {
-          this.errorMessage = 'Upload failed. Please try again.';
+    this.documentService.download(this.applicantId, doc.id).subscribe({
+      next: (res) => {
+        const body = res.body;
+        if (!body || body.byteLength === 0) {
+          this.errorMessage = 'Document is empty.';
+          this.cdr.markForCheck();
+          return;
         }
-      });
-  }
 
- onOpenDocument(doc: DocumentRow): void {
-  if (!this.applicantId) return;
+        const mime = res.headers.get('Content-Type') || doc.mimeType || 'application/octet-stream';
+        const blob = new Blob([body], { type: mime });
+        const url = URL.createObjectURL(blob);
 
-  this.documentService.download(this.applicantId, doc.id).subscribe({
-    next: (res) => {
-      const body = res.body;
-      if (!body || body.byteLength === 0) {
-        this.errorMessage = 'Document is empty.';
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+          link.remove();
+        }, 100);
+      },
+      error: () => {
+        this.errorMessage = 'Unable to open document.';
         this.cdr.markForCheck();
-        return;
       }
-
-      // Now that headers are exposed, this will actually work!
-      const mime = res.headers.get('Content-Type') || doc.mimeType || 'application/octet-stream';
-      
-      const blob = new Blob([body], { type: mime });
-      const url = URL.createObjectURL(blob);
-
-      // Create a temporary anchor element
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
-      
-      // If it's a PDF/Image, browser opens it. Otherwise, it downloads.
-      // To force download, uncomment: link.download = doc.filename;
-
-      document.body.appendChild(link);
-      link.click();
-
-      // Clean up memory
-      setTimeout(() => {
-        URL.revokeObjectURL(url);
-        link.remove();
-      }, 100);
-    },
-    error: () => {
-      this.errorMessage = 'Unable to open document.';
-      this.cdr.markForCheck();
-    }
-  });
-}
-
-
-  private inferMime(name: string): string | null {
-    const lower = name.toLowerCase();
-    if (lower.endsWith('.pdf')) return 'application/pdf';
-    if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
-    if (lower.endsWith('.png')) return 'image/png';
-    return null;
+    });
   }
-
-
 
   trackByDocumentId(index: number, item: DocumentRow): number {
     return item.id ?? index;
@@ -208,10 +128,11 @@ export class DocumentsTableComponent implements OnInit {
   private toRow(doc: ApplicantDocument): DocumentRow {
     return {
       id: doc.id,
+      rawType: doc.document_type,
       typeLabel: this.formatType(doc.document_type),
       filename: doc.original_filename,
       mimeLabel: this.formatMime(doc.mime_type),
-      mimeType: doc.mime_type,           // ADD THIS
+      mimeType: doc.mime_type,
       sizeLabel: this.formatBytes(doc.file_size),
       scanStatus: doc.scan_status,
       createdAt: doc.created_at,
@@ -219,16 +140,17 @@ export class DocumentsTableComponent implements OnInit {
     };
   }
 
-
   private formatType(value: string): string {
     return value.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
   private formatMime(value: string): string {
-    if (value === 'application/pdf') return 'PDF';
-    if (value === 'image/jpeg') return 'JPEG';
-    if (value === 'image/png') return 'PNG';
-    return value;
+    const map: Record<string, string> = {
+      'application/pdf': 'PDF',
+      'image/jpeg': 'JPEG',
+      'image/png': 'PNG'
+    };
+    return map[value] || value;
   }
 
   private formatBytes(bytes: number): string {
