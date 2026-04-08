@@ -1,0 +1,88 @@
+<div class="overflow-x-auto bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="bg-slate-50 border-b-2 border-blue-600">
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">No.</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Type</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">File</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Uploaded</th>
+                <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Scan
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngIf="isLoading">
+                <td colspan="5" class="py-12 text-center">
+                    <span
+                        class="inline-block h-6 w-6 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin"></span>
+                </td>
+            </tr>
+
+            <tr *ngIf="!isLoading && errorMessage">
+                <td colspan="5" class="py-12 text-center text-rose-500 text-sm font-medium">
+                    {{ errorMessage }}
+                </td>
+            </tr>
+
+            <tr app-document-row *ngFor="let item of documents; let i = index; trackBy: trackByDocumentId" [doc]="item"
+                (open)="onOpenDocument($event)"
+                class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors duration-200">
+            </tr>
+
+            <tr *ngIf="!isLoading && !errorMessage && documents.length === 0">
+                <td colspan="5" class="py-24 text-center">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
+                            <span class="material-symbols-outlined text-3xl">folder_open</span>
+                        </div>
+                        <p class="text-lg font-bold text-blue-950">No documents found.</p>
+                        <p class="text-sm text-slate-400 font-medium">You have no uploaded documents yet.</p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-6 overflow-x-auto bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+    <form [formGroup]="form" (ngSubmit)="onUpload()">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 border-b-2 border-blue-600">
+                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Upload New
+                        Document</th>
+                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Type</th>
+                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">File</th>
+                    <th class="px-5 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-right">
+                        Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="px-5 py-4 text-sm text-slate-600">Choose a document type and file.</td>
+
+                    <td class="px-5 py-4">
+                        <select class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                            formControlName="document_type">
+                            <option value="" disabled>Select type</option>
+                            <option *ngFor="let t of DOCUMENT_TYPES" [value]="t">{{ t }}</option>
+                        </select>
+                    </td>
+
+                    <td class="px-5 py-4">
+                        <input type="file" class="block w-full text-sm text-slate-500" (change)="onFileSelected($event)"
+                            accept="application/pdf,image/jpeg,image/png" />
+                        <div *ngIf="fileError" class="text-[11px] text-rose-500 mt-1">{{ fileError }}</div>
+                    </td>
+
+                    <td class="px-5 py-4 text-right">
+                        <button type="submit" [disabled]="isUploading"
+                            class="px-4 py-2.5 rounded-lg text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
+                            {{ isUploading ? 'Uploading...' : 'Upload' }}
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
