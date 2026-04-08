@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { ApplicantDocument } from '../models/applicant-document.model';
-
+import { HttpResponse } from '@angular/common/http';
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
   private readonly API = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   upload(
     applicantId: number,
@@ -29,4 +29,12 @@ export class DocumentService {
       `${this.API}/applicants/${applicantId}/documents`
     );
   }
+
+  download(applicantId: number, documentId: number): Observable<HttpResponse<ArrayBuffer>> {
+    return this.http.get(
+      `${this.API}/applicants/${applicantId}/documents/${documentId}/download`,
+      { responseType: 'arraybuffer', observe: 'response' }
+    );
+  }
+
 }

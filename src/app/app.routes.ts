@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth-guard/auth-guard';
 import { ApplicantDashboardComponent } from './pages/applicants/applicants-dashbaord/applicants-dashbaord';
 import { StatusTableComponent } from './components/applicant/status-table/status-table';
 import { ExamSchedTable } from './components/applicant/exam-sched-table/exam-sched-table';
+import { DocumentsTableComponent } from './components/applicant/documents-table/documents-table';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPage },
@@ -47,6 +48,7 @@ export const routes: Routes = [
                     { path: '', redirectTo: 'status', pathMatch: 'full' },
                     { path: 'status', component: StatusTableComponent },
                     { path: 'schedule', component: ExamSchedTable },
+                    { path: 'documents', component: DocumentsTableComponent },
                 ]
             }
         ]
