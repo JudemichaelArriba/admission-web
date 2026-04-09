@@ -12,6 +12,7 @@ export class DatePickerComponent {
   @Input() placeholder: string = 'Select Date';
   @Input() value: string = '';
   @Input() maxDate: string | null = null;
+  @Input() theme: 'dark' | 'light' = 'dark';
   @Output() valueChange = new EventEmitter<string>();
 
   isOpen = false;
@@ -26,14 +27,15 @@ export class DatePickerComponent {
   months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   years: number[] = [];
 
-  constructor(
-    private eRef: ElementRef, 
-    private cdr: ChangeDetectorRef 
-  ) {
+  constructor(private eRef: ElementRef, private cdr: ChangeDetectorRef) {
     this.displayMonth = this.currentDate.getMonth();
     this.displayYear = this.currentDate.getFullYear();
     this.generateCalendar();
     this.generateYearList();
+  }
+
+  get isDark(): boolean {
+    return this.theme === 'dark';
   }
 
   @HostListener('document:click', ['$event'])
@@ -48,23 +50,18 @@ export class DatePickerComponent {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.viewMode = 'days';
-      
-   
       requestAnimationFrame(() => {
         this.checkSpace();
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       });
     }
   }
 
   private checkSpace() {
-    const hostElement = this.eRef.nativeElement;
-    const rect = hostElement.getBoundingClientRect();
-    const dropdownHeight = 360; 
-    
+    const rect = this.eRef.nativeElement.getBoundingClientRect();
+    const dropdownHeight = 360;
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
-
     this.isDropdownAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;
   }
 
@@ -88,7 +85,7 @@ export class DatePickerComponent {
     const limitDate = new Date(this.maxDate);
     limitDate.setHours(0, 0, 0, 0);
     cellDate.setHours(0, 0, 0, 0);
-    return cellDate > limitDate; 
+    return cellDate > limitDate;
   }
 
   selectYear(year: number) {

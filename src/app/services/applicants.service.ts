@@ -12,4 +12,7 @@ export class ApplicantService {
   getMe(): Observable<Applicant> {
     return this.http.get<Applicant>(`${this.API}/me/applicant`);
   }
+  updateApplicant(id: number, data: Partial<Applicant>): Observable<Applicant> {
+    return this.http.put<Applicant>(`${this.API}/applicants/${id}`, data);
+  }
 }

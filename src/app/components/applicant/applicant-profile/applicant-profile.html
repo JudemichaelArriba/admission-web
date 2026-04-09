@@ -1,0 +1,224 @@
+<div class="min-h-screen bg-slate-50/60 py-12 px-4">
+  <div class="max-w-5xl mx-auto space-y-6">
+
+    @if (isLoading()) {
+    <div class="flex flex-col items-center justify-center py-40 gap-4">
+      <div class="w-11 h-11 rounded-full border-[3px] border-blue-200 border-t-blue-600 animate-spin"></div>
+      <p class="text-sm font-semibold text-slate-400 tracking-wider uppercase">Loading profile…</p>
+    </div>
+    }
+
+    @if (!isLoading()) {
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xl shadow-slate-200/60 overflow-hidden">
+
+      <div class="h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-200"></div>
+
+      <div
+        class="px-10 pt-10 pb-7 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-100">
+        <div class="flex items-center gap-5">
+          <div
+            class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center shadow-lg shadow-blue-200 shrink-0">
+            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.2em] mb-0.5">Student Portal</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">My Profile</h1>
+            <p class="text-slate-400 text-xs font-medium mt-0.5">Manage your personal information and credentials.</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 shrink-0">
+          @if (!isEditing()) {
+          <button type="button" (click)="startEditing()"
+            class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-md shadow-blue-200 transition-all duration-200">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+            </svg>
+            Edit Profile
+          </button>
+          }
+
+          @if (isEditing()) {
+          <button type="button" (click)="cancelEditing()"
+            class="flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 active:scale-95 text-slate-600 text-xs font-bold uppercase tracking-widest rounded-xl border border-slate-200 shadow-sm transition-all duration-200">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Cancel
+          </button>
+          <button type="button" (click)="onSubmit()" [disabled]="isSaving()"
+            class="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 active:scale-95 text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-md shadow-blue-200 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed">
+            @if (isSaving()) {
+            <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            Saving…
+            } @else {
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Save Changes
+            }
+          </button>
+          }
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="px-10 py-10 space-y-12">
+
+          <div>
+            <div class="flex items-center gap-3 mb-7">
+              <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.22em]">Identity</span>
+              <div class="h-px flex-1 bg-slate-100"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">First Name</label>
+                <input type="text" formControlName="first_name"
+                  class="w-full px-4 py-3.5 rounded-xl border text-sm font-semibold outline-none transition-all duration-200"
+                  [ngClass]="isEditing()
+                    ? (hasErr('first_name','required')
+                        ? 'bg-red-50 border-red-300 text-slate-800 focus:ring-2 focus:ring-red-200 focus:border-red-400'
+                        : 'bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-400')
+                    : 'bg-slate-50 border-slate-100 text-slate-600 cursor-default'">
+                @if (hasErr('first_name', 'required')) {
+                <p class="text-[10px] text-red-500 font-bold pl-1">Required</p>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">
+                  Middle Name <span class="normal-case font-normal text-slate-400">(optional)</span>
+                </label>
+                <input type="text" formControlName="middle_name"
+                  class="w-full px-4 py-3.5 rounded-xl border text-sm font-semibold outline-none transition-all duration-200"
+                  [ngClass]="isEditing()
+                    ? 'bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-400'
+                    : 'bg-slate-50 border-slate-100 text-slate-600 cursor-default'">
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Last Name</label>
+                <input type="text" formControlName="last_name"
+                  class="w-full px-4 py-3.5 rounded-xl border text-sm font-semibold outline-none transition-all duration-200"
+                  [ngClass]="isEditing()
+                    ? (hasErr('last_name','required')
+                        ? 'bg-red-50 border-red-300 text-slate-800 focus:ring-2 focus:ring-red-200 focus:border-red-400'
+                        : 'bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-400')
+                    : 'bg-slate-50 border-slate-100 text-slate-600 cursor-default'">
+                @if (hasErr('last_name', 'required')) {
+                <p class="text-[10px] text-red-500 font-bold pl-1">Required</p>
+                }
+              </div>
+
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center gap-3 mb-7">
+              <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.22em]">Contact & Details</span>
+              <div class="h-px flex-1 bg-slate-100"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Email
+                  Address</label>
+                <div class="relative">
+                  <input type="email" formControlName="email"
+                    class="w-full px-4 py-3.5 pr-11 rounded-xl border bg-blue-50/60 border-blue-100 text-blue-800/70 text-sm font-semibold cursor-not-allowed outline-none">
+                  <span class="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                        clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                </div>
+                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-1">System Locked</p>
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Phone Number</label>
+                <input type="tel" formControlName="phone_number"
+                  class="w-full px-4 py-3.5 rounded-xl border text-sm font-semibold outline-none transition-all duration-200"
+                  [ngClass]="isEditing()
+                    ? (hasErr('phone_number','pattern')
+                        ? 'bg-red-50 border-red-300 text-slate-800 focus:ring-2 focus:ring-red-200 focus:border-red-400'
+                        : 'bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-400')
+                    : 'bg-slate-50 border-slate-100 text-slate-600 cursor-default'">
+                @if (hasErr('phone_number', 'pattern')) {
+                <p class="text-[10px] text-red-500 font-bold pl-1">Invalid phone number</p>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Date of
+                  Birth</label>
+                @if (isEditing()) {
+                <app-date-picker placeholder="Select date" theme="light" [value]="dateValue" [maxDate]="today"
+                  (valueChange)="onDateChange($event)">
+                </app-date-picker>
+                } @else {
+                <div
+                  class="w-full px-4 py-3.5 rounded-xl border bg-slate-50 border-slate-100 text-slate-600 text-sm font-semibold cursor-default">
+                  {{ dateValue || '—' }}
+                </div>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1">Full Address</label>
+                <textarea formControlName="address" rows="3"
+                  class="w-full px-4 py-3.5 rounded-xl border text-sm font-semibold outline-none transition-all duration-200 resize-none"
+                  [ngClass]="isEditing()
+                    ? 'bg-white border-slate-200 text-slate-800 focus:ring-2 focus:ring-blue-100 focus:border-blue-400'
+                    : 'bg-slate-50 border-slate-100 text-slate-600 cursor-default'">
+                </textarea>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        @if (isEditing()) {
+        <div class="mx-10 mb-8 rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden">
+          <div class="flex items-center gap-2.5 px-5 py-3 bg-amber-100/70 border-b border-amber-200">
+            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <p class="text-[11px] font-black text-amber-700 uppercase tracking-widest">Important Notice</p>
+          </div>
+          <div class="px-5 py-4 space-y-2">
+            <p class="text-xs font-semibold text-amber-800 leading-relaxed">
+              All information submitted must be <span class="font-black">accurate, truthful, and verifiable</span>.
+              Ensure that every field reflects your legitimate and up-to-date personal records.
+            </p>
+            <p class="text-[11px] text-amber-700/80 leading-relaxed">
+              Submitting false, misleading, or unverified information may result in the rejection of your application
+              or disciplinary action in accordance with institutional policies. Use the
+              <span class="font-bold text-blue-600">Save Changes</span> button above once you are certain all entries
+              are correct.
+            </p>
+          </div>
+        </div>
+        }
+
+      </form>
+    </div>
+
+    <p class="text-center text-[10px] text-slate-400 uppercase tracking-[0.18em] font-semibold pb-2">
+      &copy; 2026 Aces Tagum College Inc. · Registrar's Office
+    </p>
+    }
+
+  </div>
+</div>
