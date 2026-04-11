@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject }
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { ExamsService } from '../../../services/exams.service';
+import { AuthService } from '../../../services/auth.service'; // Added AuthService import
 import { EntranceExam } from '../../../models/entrance-exam.model';
 import { ExamRow } from '../../../models/exam-row.model';
 import { ExamRowComponent } from '../exam-row/exam-row';
@@ -16,6 +17,7 @@ import { ExamRowComponent } from '../exam-row/exam-row';
 })
 export class ExamSchedTable implements OnInit {
   private readonly examsService = inject(ExamsService);
+  private readonly authService = inject(AuthService); // Inject AuthService
   private readonly cdr = inject(ChangeDetectorRef);
 
   exams: ExamRow[] = [];
@@ -30,7 +32,18 @@ export class ExamSchedTable implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.examsService.getMyExams()
+    // 1. Get the applicant ID from local storage via AuthService
+    const applicantId = this.authService.getApplicantId();
+
+    if (!applicantId) {
+      this.errorMessage = 'Applicant profile not found. Please log in again.';
+      this.isLoading = false;
+      this.cdr.markForCheck();
+      return;
+    }
+
+    // 2. Pass the ID to the service so Laravel knows who is requesting
+    this.examsService.getExams(applicantId)
       .pipe(finalize(() => {
         this.isLoading = false;
         this.cdr.markForCheck();
@@ -54,9 +67,9 @@ export class ExamSchedTable implements OnInit {
   private toRow(exam: EntranceExam): ExamRow {
     return {
       id: exam.id,
-      examDate: this.toDate(exam.exam_date),
-      examEndTime: this.toDate(exam.exam_end_time),
-      room: exam.room ?? '',
+      examDate: this.toDate(exam.schedule?.exam_date),
+      examEndTime: this.toDate(exam.schedule?.exam_end_time),
+      room: exam.schedule?.room ?? '',
       status: exam.status,
     };
   }

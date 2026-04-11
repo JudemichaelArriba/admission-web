@@ -1,7 +1,8 @@
 export interface ExamRow {
-    id: number;
+    id: number; 
     examDate: Date | null;
     examEndTime: Date | null;
     room: string;
-    status?: 'scheduled' | 'evaluated';
+    status: 'scheduled' | 'evaluated' | 'completed';
+    applicantName?: string; 
 }

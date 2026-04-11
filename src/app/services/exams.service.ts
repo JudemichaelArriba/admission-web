@@ -6,13 +6,17 @@ import { EntranceExam } from '../models/entrance-exam.model';
 
 @Injectable({ providedIn: 'root' })
 export class ExamsService {
-    private readonly http = inject(HttpClient);
-    private readonly API = environment.apiUrl;
+  private readonly http = inject(HttpClient);
+  private readonly API = `${environment.apiUrl}/exams`;
 
-    getMyExams(): Observable<EntranceExam[]> {
-        return this.http.get<EntranceExam[]>(`${this.API}/exams`);
-    }
-      getExamsByApplicant(applicantId: number): Observable<EntranceExam[]> {
-    return this.http.get<EntranceExam[]>(`${this.API}/exams/${applicantId}`);
+ 
+  getExams(applicantId?: number): Observable<EntranceExam[]> {
+    const url = applicantId ? `${this.API}/${applicantId}` : this.API;
+    return this.http.get<EntranceExam[]>(url);
+  }
+
+
+  evaluateExam(examId: number, exam_score: number): Observable<any> {
+    return this.http.put(`${this.API}/${examId}/evaluate`, { exam_score });
   }
 }

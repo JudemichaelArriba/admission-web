@@ -81,20 +81,17 @@ export class ApplicantApplicationsPage implements OnInit {
     this.selectedApplicant.set(null);
   }
 
-
-
   public handleApplicantUpdate(updatedApplicant: Applicant) {
     this.patchApplicant(updatedApplicant);
   }
+
   onApprove(applicant: Applicant) {
     this.processingId.set(applicant.id);
     this.processingAction.set('approve');
 
-
-    
     forkJoin({
       docs: this.documentService.list(applicant.id),
-      exams: this.examsService.getExamsByApplicant(applicant.id)
+      exams: this.examsService.getExams(applicant.id) 
     }).subscribe({
       next: ({ docs, exams }) => {
         this.clearProcessing();
