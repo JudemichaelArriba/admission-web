@@ -11,6 +11,8 @@ import { Applicant } from '../../../models/applicant.model';
 })
 export class ApplicantsTable {
   @Input({ required: true }) data: Applicant[] = [];
+  @Input() processingId: number | null = null;
+  @Input() processingAction: 'approve' | 'reject' | null = null;
   @Output() approveClicked = new EventEmitter<Applicant>();
   @Output() rejectClicked = new EventEmitter<Applicant>();
 }

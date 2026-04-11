@@ -61,6 +61,8 @@
       } @else {
         <app-applicants-table
           [data]="filteredApplicants()"
+          [processingId]="processingId()"
+          [processingAction]="processingAction()"
           (approveClicked)="onApprove($event)"
           (rejectClicked)="onReject($event)">
         </app-applicants-table>

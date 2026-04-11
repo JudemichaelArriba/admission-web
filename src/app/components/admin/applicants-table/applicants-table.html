@@ -16,6 +16,8 @@
         <tr
           app-applicants-row
           [applicant]="app"
+          [processingId]="processingId"
+          [processingAction]="processingAction"
           (approveClicked)="approveClicked.emit($event)"
           (rejectClicked)="rejectClicked.emit($event)"
           class="hover:bg-blue-50/30 transition-all group">
