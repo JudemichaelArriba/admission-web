@@ -12,4 +12,7 @@ export class ExamsService {
     getMyExams(): Observable<EntranceExam[]> {
         return this.http.get<EntranceExam[]>(`${this.API}/exams`);
     }
+      getExamsByApplicant(applicantId: number): Observable<EntranceExam[]> {
+    return this.http.get<EntranceExam[]>(`${this.API}/exams/${applicantId}`);
+  }
 }

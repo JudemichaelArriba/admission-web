@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApplicantsRow } from '../applicants-row/applicants-row';
 import { Applicant } from '../../../models/applicant.model';
@@ -11,4 +11,6 @@ import { Applicant } from '../../../models/applicant.model';
 })
 export class ApplicantsTable {
   @Input({ required: true }) data: Applicant[] = [];
+  @Output() approveClicked = new EventEmitter<Applicant>();
+  @Output() rejectClicked = new EventEmitter<Applicant>();
 }

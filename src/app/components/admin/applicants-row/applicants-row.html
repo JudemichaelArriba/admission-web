@@ -34,25 +34,25 @@
 
 <td class="px-8 py-6">
   <div class="flex items-center justify-end gap-2 transition-all">
-
     @if (isPending) {
-    <button
-      class="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white transition-all"
-      title="Approve">
-      <span class="material-symbols-outlined text-[18px]">check_circle</span>
-    </button>
+      <button
+        (click)="approveClicked.emit(applicant)"
+        class="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white transition-all"
+        title="Approve">
+        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+      </button>
 
-    <button
-      class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white transition-all"
-      title="Reject">
-      <span class="material-symbols-outlined text-[18px]">cancel</span>
-    </button>
+      <button
+        (click)="rejectClicked.emit(applicant)"
+        class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white transition-all"
+        title="Reject">
+        <span class="material-symbols-outlined text-[18px]">cancel</span>
+      </button>
     } @else {
-    <div class="flex items-center gap-1 text-slate-300 select-none">
-      <span class="material-symbols-outlined text-[16px]">lock</span>
-      <span class="text-[9px] font-black uppercase tracking-tighter">Finalized</span>
-    </div>
+      <div class="flex items-center gap-1 text-slate-300 select-none">
+        <span class="material-symbols-outlined text-[16px]">lock</span>
+        <span class="text-[9px] font-black uppercase tracking-tighter">Finalized</span>
+      </div>
     }
-
   </div>
 </td>
