@@ -20,7 +20,8 @@
           [processingAction]="processingAction"
           (approveClicked)="approveClicked.emit($event)"
           (rejectClicked)="rejectClicked.emit($event)"
-          class="hover:bg-blue-50/30 transition-all group">
+          (click)="rowClicked.emit(app)"
+          class="hover:bg-blue-50/30 transition-all group cursor-pointer">
         </tr>
       } @empty {
         <tr>

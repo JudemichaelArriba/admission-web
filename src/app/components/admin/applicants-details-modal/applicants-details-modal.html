@@ -1,0 +1,112 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+  <div 
+    class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
+    (click)="closeModal.emit()">
+  </div>
+
+  <div class="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    
+    <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <div>
+        <h2 class="text-xl font-black text-slate-900 tracking-tight">Applicant Dossier</h2>
+        <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">ID: {{ applicant.id }}</p>
+      </div>
+      <button 
+        (click)="closeModal.emit()"
+        class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-100">
+            <div class="w-20 h-20 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-4">
+              <span class="text-2xl font-black text-blue-600">{{ applicant.first_name[0] }}{{ applicant.last_name[0] }}</span>
+            </div>
+            <h3 class="text-lg font-black text-slate-900">{{ applicant.first_name }} {{ applicant.last_name }}</h3>
+            <p class="text-sm font-medium text-slate-500 mb-4">{{ applicant.email }}</p>
+            
+            <div class="pt-4 border-t border-slate-100 space-y-4">
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Status</span>
+                <span [class]="'inline-flex px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full border ' + getStatusClass(applicant.status)">
+                  {{ applicant.status || 'Pending' }}
+                </span>
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Target Course</span>
+                <span class="text-sm font-bold text-slate-700">{{ applicant.course?.course_name || 'N/A' }}</span>
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Application Date</span>
+                <span class="text-sm font-bold text-slate-700">{{ applicant.created_at | date:'longDate' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm shadow-slate-100">
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+              <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Submitted Documents</h3>
+            </div>
+            
+            <div class="p-6">
+              @if (isLoadingDocs()) {
+                <div class="flex flex-col items-center justify-center py-12 gap-3">
+                  <div class="w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+                  <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Documents...</p>
+                </div>
+              } @else if (errorMessage()) {
+                <div class="p-4 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 text-red-600">
+                  <span class="material-symbols-outlined">error</span>
+                  <p class="text-sm font-bold">{{ errorMessage() }}</p>
+                </div>
+              } @else if (documents().length === 0) {
+                <div class="flex flex-col items-center justify-center py-12 text-center">
+                  <span class="material-symbols-outlined text-slate-200 text-5xl mb-3">folder_off</span>
+                  <p class="text-sm font-bold text-slate-500">No documents uploaded</p>
+                  <p class="text-xs font-medium text-slate-400 mt-1">This applicant has not provided any files yet.</p>
+                </div>
+              } @else {
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  @for (doc of documents(); track doc.id) {
+                    <div 
+                      (click)="openDocument(doc)"
+                      [class.opacity-50]="doc.scan_status === 'infected'"
+                      [class.cursor-not-allowed]="doc.scan_status === 'infected'"
+                      [class.hover:-translate-y-1]="doc.scan_status !== 'infected'"
+                      [class.hover:shadow-md]="doc.scan_status !== 'infected'"
+                      [class.hover:border-blue-300]="doc.scan_status !== 'infected'"
+                      class="flex flex-col p-4 rounded-xl border border-slate-200 bg-white cursor-pointer transition-all group">
+                      
+                      <div class="flex items-start justify-between mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors text-blue-600">
+                          <span class="material-symbols-outlined text-[20px]">
+                            {{ doc.mime_type.includes('pdf') ? 'picture_as_pdf' : 'image' }}
+                          </span>
+                        </div>
+                        @if (doc.scan_status === 'infected') {
+                          <span class="px-2 py-0.5 rounded text-[9px] font-black bg-red-100 text-red-700 uppercase tracking-widest">Infected</span>
+                        } @else {
+                          <span class="px-2 py-0.5 rounded text-[9px] font-black bg-slate-100 text-slate-500 uppercase tracking-widest">{{ formatBytes(doc.file_size) }}</span>
+                        }
+                      </div>
+                      
+                      <h4 class="text-sm font-bold text-slate-900 truncate mb-1" [title]="doc.original_filename">{{ doc.original_filename }}</h4>
+                      <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{{ formatType(doc.document_type) }}</p>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>

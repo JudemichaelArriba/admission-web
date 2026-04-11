@@ -64,7 +64,8 @@
           [processingId]="processingId()"
           [processingAction]="processingAction()"
           (approveClicked)="onApprove($event)"
-          (rejectClicked)="onReject($event)">
+          (rejectClicked)="onReject($event)"
+          (rowClicked)="openApplicantDetails($event)">
         </app-applicants-table>
       }
 
@@ -82,3 +83,10 @@
   </section>
 
 </div>
+
+@if (isModalOpen() && selectedApplicant()) {
+  <app-applicants-details-modal
+    [applicant]="selectedApplicant()!"
+    (closeModal)="closeModal()">
+  </app-applicants-details-modal>
+}

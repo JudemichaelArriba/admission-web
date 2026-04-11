@@ -7,12 +7,13 @@ import { DocumentService } from "../../../services/document.service";
 import { ExamsService } from "../../../services/exams.service";
 import { DialogService } from "../../../services/dialog.service";
 import { ApplicantsTable } from "../../../components/admin/applicants-table/applicants-table";
+import { ApplicantsDetailsModal } from "../../../components/admin/applicants-details-modal/applicants-details-modal";
 import { Applicant } from '../../../models/applicant.model';
 
 @Component({
   selector: 'app-applicant-applications-page',
   standalone: true,
-  imports: [CommonModule, ApplicantsTable, FormsModule],
+  imports: [CommonModule, ApplicantsTable, ApplicantsDetailsModal, FormsModule],
   templateUrl: './applicant-applications-page.html'
 })
 export class ApplicantApplicationsPage implements OnInit {
@@ -27,6 +28,9 @@ export class ApplicantApplicationsPage implements OnInit {
   activeFilter = signal<'all' | 'pending' | 'approved' | 'rejected'>('all');
   processingId = signal<number | null>(null);
   processingAction = signal<'approve' | 'reject' | null>(null);
+
+  selectedApplicant = signal<Applicant | null>(null);
+  isModalOpen = signal<boolean>(false);
 
   filteredApplicants = computed(() => {
     let list = this.allApplicants();
@@ -65,6 +69,16 @@ export class ApplicantApplicationsPage implements OnInit {
 
   setFilter(filter: 'all' | 'pending' | 'approved' | 'rejected') {
     this.activeFilter.set(filter);
+  }
+
+  openApplicantDetails(applicant: Applicant) {
+    this.selectedApplicant.set(applicant);
+    this.isModalOpen.set(true);
+  }
+
+  closeModal() {
+    this.isModalOpen.set(false);
+    this.selectedApplicant.set(null);
   }
 
   onApprove(applicant: Applicant) {
@@ -163,6 +177,9 @@ export class ApplicantApplicationsPage implements OnInit {
     this.allApplicants.update(list =>
       list.map(a => a.id === updated.id ? { ...a, ...updated } : a)
     );
+    if (this.selectedApplicant()?.id === updated.id) {
+      this.selectedApplicant.set({ ...this.selectedApplicant()!, ...updated });
+    }
   }
 
   private clearProcessing() {

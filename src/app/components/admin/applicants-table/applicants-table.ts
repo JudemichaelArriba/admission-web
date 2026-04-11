@@ -15,4 +15,5 @@ export class ApplicantsTable {
   @Input() processingAction: 'approve' | 'reject' | null = null;
   @Output() approveClicked = new EventEmitter<Applicant>();
   @Output() rejectClicked = new EventEmitter<Applicant>();
+  @Output() rowClicked = new EventEmitter<Applicant>();
 }

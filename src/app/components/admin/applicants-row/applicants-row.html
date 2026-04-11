@@ -34,10 +34,9 @@
 
 <td class="px-8 py-6">
   <div class="flex items-center justify-end gap-2 transition-all">
-
     @if (isPending) {
       <button
-        (click)="approveClicked.emit(applicant)"
+        (click)="$event.stopPropagation(); approveClicked.emit(applicant)"
         [disabled]="isProcessing"
         class="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-600 text-white border border-blue-700 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
         title="Approve">
@@ -49,7 +48,7 @@
       </button>
 
       <button
-        (click)="rejectClicked.emit(applicant)"
+        (click)="$event.stopPropagation(); rejectClicked.emit(applicant)"
         [disabled]="isProcessing"
         class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white disabled:opacity-60 disabled:cursor-not-allowed transition-all"
         title="Reject">
@@ -65,6 +64,5 @@
         <span class="text-[9px] font-black uppercase tracking-tighter">Finalized</span>
       </div>
     }
-
   </div>
 </td>
