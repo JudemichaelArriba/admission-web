@@ -1,0 +1,57 @@
+<td class="px-8 py-4">
+    <div class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
+        {{ schedule.id }}
+    </div>
+</td>
+
+<td class="px-6 py-4">
+    <div class="text-sm font-bold text-slate-800">
+        {{ normalizedDate ? (normalizedDate | date:'MMM d, y') : '—' }}
+    </div>
+    <div class="text-xs font-medium text-slate-500 mt-0.5">
+        {{ normalizedDate ? (normalizedDate | date:'h:mm a') : '' }} -
+        {{ normalizedEndTime ? (normalizedEndTime | date:'h:mm a') : '' }}
+    </div>
+</td>
+
+<td class="px-6 py-4">
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-600">
+        <span class="material-symbols-outlined text-[14px]">meeting_room</span>
+        {{ schedule.room }}
+    </div>
+</td>
+
+<td class="px-6 py-4 text-center">
+    <div
+        class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
+        {{ schedule.exams?.length || 0 }}
+    </div>
+</td>
+
+<td class="px-6 py-4 text-center">
+    <span
+        [class]="schedule.status === 'upcoming' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'"
+        class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
+        {{ schedule.status }}
+    </span>
+</td>
+
+<td class="px-8 py-4 text-right">
+    <div class="flex items-center justify-end gap-2">
+        <button
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
+            title="Manage Students">
+            <span class="material-symbols-outlined text-[18px]">group</span>
+        </button>
+        <button
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
+            title="Edit Schedule">
+            <span class="material-symbols-outlined text-[18px]">edit</span>
+        </button>
+        <button
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors"
+            title="Delete Schedule">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+        </button>
+    </div>
+</td>

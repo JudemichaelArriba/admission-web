@@ -12,6 +12,7 @@ import { ApplicantProfileComponent } from './components/applicant/applicant-prof
 import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard';
 import { ApplicantApplicationsPage } from './pages/admin/applicant-applications-page/applicant-applications-page';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout';
+import { ExamSchedulerPage } from './pages/admin/exam-scheduler-page/exam-scheduler-page';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPage },
@@ -40,6 +41,7 @@ export const routes: Routes = [
                 children: [
                     { path: '', redirectTo: 'registry', pathMatch: 'full' },
                     { path: 'registry', component: ApplicantApplicationsPage },
+                    { path: 'exam-scheduler', component: ExamSchedulerPage },
 
                 ]
             }
