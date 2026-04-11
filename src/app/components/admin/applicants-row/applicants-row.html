@@ -33,29 +33,29 @@
 </td>
 
 <td class="px-8 py-6">
-  <div class="flex items-center justify-end gap-2 transition-all">
+  <div class="flex items-center justify-end gap-3 transition-all">
     @if (isPending) {
       <button
         (click)="$event.stopPropagation(); approveClicked.emit(applicant)"
         [disabled]="isProcessing"
-        class="w-9 h-9 flex items-center justify-center rounded-xl bg-blue-600 text-white border border-blue-700 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+        class="flex items-center justify-center text-blue-600 hover:text-blue-700 hover:scale-110 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed transition-all"
         title="Approve">
         @if (isApproving) {
-          <span class="w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span class="w-5 h-5 border-[2.5px] border-blue-200 border-t-blue-600 rounded-full animate-spin"></span>
         } @else {
-          <span class="material-symbols-outlined text-[18px]">check_circle</span>
+          <span class="material-symbols-outlined text-[24px]">check_circle</span>
         }
       </button>
 
       <button
         (click)="$event.stopPropagation(); rejectClicked.emit(applicant)"
         [disabled]="isProcessing"
-        class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+        class="flex items-center justify-center text-red-600 hover:text-red-700 hover:scale-110 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed transition-all"
         title="Reject">
         @if (isRejecting) {
-          <span class="w-[14px] h-[14px] border-2 border-red-300/40 border-t-red-600 rounded-full animate-spin"></span>
+          <span class="w-5 h-5 border-[2.5px] border-red-200 border-t-red-600 rounded-full animate-spin"></span>
         } @else {
-          <span class="material-symbols-outlined text-[18px]">cancel</span>
+          <span class="material-symbols-outlined text-[24px]">cancel</span>
         }
       </button>
     } @else {
