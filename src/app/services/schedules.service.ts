@@ -12,4 +12,7 @@ export class SchedulesService {
   getSchedules(): Observable<ExamSchedule[]> {
     return this.http.get<ExamSchedule[]>(this.API);
   }
+  createSchedule(data: Partial<ExamSchedule>): Observable<{message: string, data: ExamSchedule}> {
+    return this.http.post<{message: string, data: ExamSchedule}>(this.API, data);
+  }
 }

@@ -15,7 +15,7 @@
         </p>
       </div>
 
-      <button class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-600/20 whitespace-nowrap">
+      <button  (click)="isAddModalOpen.set(true)" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-600/20 whitespace-nowrap">
         <span class="material-symbols-outlined text-[20px]">calendar_add_on</span>
         Create Schedule
       </button>
@@ -70,3 +70,10 @@
   </section>
 
 </div>
+
+@if (isAddModalOpen()) {
+  <app-schedule-add-modal 
+    (close)="isAddModalOpen.set(false)" 
+    (saved)="handleScheduleAdded($event)">
+  </app-schedule-add-modal>
+}

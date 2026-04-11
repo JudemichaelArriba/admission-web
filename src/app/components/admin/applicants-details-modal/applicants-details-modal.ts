@@ -90,13 +90,19 @@ export class ApplicantsDetailsModal implements OnInit {
   }
 
   hasChanges(): boolean {
-    return this.editForm.first_name !== this.applicant.first_name ||
+    const originalDate = this.applicant.date_of_birth
+      ? this.applicant.date_of_birth.split('T')[0]
+      : '';
+
+    return (
+      this.editForm.first_name !== this.applicant.first_name ||
       this.editForm.last_name !== this.applicant.last_name ||
       this.editForm.middle_name !== (this.applicant.middle_name || '') ||
       this.editForm.phone_number !== (this.applicant.phone_number || '') ||
-      this.editForm.date_of_birth !== (this.applicant.date_of_birth || '') ||
+      this.editForm.date_of_birth !== originalDate || 
       this.editForm.address !== (this.applicant.address || '') ||
-      this.editForm.course_id !== this.applicant.course_id;
+      this.editForm.course_id !== this.applicant.course_id
+    );
   }
 
   saveChanges() {
@@ -115,8 +121,8 @@ export class ApplicantsDetailsModal implements OnInit {
             this.isSaving.set(false);
             this.isEditing.set(false);
             this.applicantUpdated.emit(updated);
-            this.applicant = { ...this.applicant, ...updated }; 
-            this.initializeForm(); 
+            this.applicant = { ...this.applicant, ...updated };
+            this.initializeForm();
             this.dialogService.success('Update Successful', 'Applicant details have been successfully updated.');
           },
           error: (err) => {
@@ -135,7 +141,7 @@ export class ApplicantsDetailsModal implements OnInit {
     this.isClosing.set(true);
     setTimeout(() => {
       this.closeModal.emit();
-    }, 200); 
+    }, 200);
   }
 
   onCourseChange(courseId: number) {
