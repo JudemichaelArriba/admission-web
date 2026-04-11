@@ -14,16 +14,18 @@ export class DropdownComponent {
   @Input() options: DropdownOption[] = [];
   @Input() selectedValue: any = null;
   @Input() isLoading: boolean = false;
+  @Input() theme: 'dark' | 'light' = 'dark'; 
 
   @Output() selectionChange = new EventEmitter<any>();
 
   isOpen = false;
   isDropdownAbove = false;
 
-  constructor(
-    private eRef: ElementRef,
-    private cdr: ChangeDetectorRef 
-  ) { }
+  constructor(private eRef: ElementRef, private cdr: ChangeDetectorRef) {}
+
+  get isDark(): boolean {
+    return this.theme === 'dark';
+  }
 
   @HostListener('document:click', ['$event'])
   clickout(event: any) {
@@ -35,12 +37,10 @@ export class DropdownComponent {
   toggle() {
     if (this.isLoading) return;
     this.isOpen = !this.isOpen;
-
     if (this.isOpen) {
-    
       requestAnimationFrame(() => {
         this.checkSpace();
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       });
     }
   }
@@ -57,10 +57,8 @@ export class DropdownComponent {
   }
 
   private checkSpace() {
-    const hostElement = this.eRef.nativeElement;
-    const rect = hostElement.getBoundingClientRect();
-    const dropdownHeight = 260; 
-
+    const rect = this.eRef.nativeElement.getBoundingClientRect();
+    const dropdownHeight = 260;
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
     this.isDropdownAbove = spaceBelow < dropdownHeight && spaceAbove > dropdownHeight;

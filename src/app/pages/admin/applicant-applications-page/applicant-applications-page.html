@@ -87,6 +87,7 @@
 @if (isModalOpen() && selectedApplicant()) {
   <app-applicants-details-modal
     [applicant]="selectedApplicant()!"
-    (closeModal)="closeModal()">
+    (closeModal)="closeModal()"
+    (applicantUpdated)="handleApplicantUpdate($event)">
   </app-applicants-details-modal>
 }

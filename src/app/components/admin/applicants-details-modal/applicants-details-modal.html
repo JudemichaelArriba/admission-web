@@ -1,111 +1,278 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-  <div 
-    class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" 
-    (click)="closeModal.emit()">
-  </div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 transition-all duration-200"
+  [class.opacity-0]="isClosing()" [class.opacity-100]="!isClosing()">
 
-  <div class="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-    
-    <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-      <div>
-        <h2 class="text-xl font-black text-slate-900 tracking-tight">Applicant Dossier</h2>
-        <p class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">ID: {{ applicant.id }}</p>
-      </div>
-      <button 
-        (click)="closeModal.emit()"
-        class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
-        <span class="material-symbols-outlined text-[20px]">close</span>
-      </button>
-    </div>
+  <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" (click)="triggerClose()"></div>
 
-    <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <div class="lg:col-span-1 space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm shadow-slate-100">
-            <div class="w-20 h-20 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-4">
-              <span class="text-2xl font-black text-blue-600">{{ applicant.first_name[0] }}{{ applicant.last_name[0] }}</span>
-            </div>
-            <h3 class="text-lg font-black text-slate-900">{{ applicant.first_name }} {{ applicant.last_name }}</h3>
-            <p class="text-sm font-medium text-slate-500 mb-4">{{ applicant.email }}</p>
-            
-            <div class="pt-4 border-t border-slate-100 space-y-4">
-              <div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Status</span>
-                <span [class]="'inline-flex px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full border ' + getStatusClass(applicant.status)">
-                  {{ applicant.status || 'Pending' }}
-                </span>
-              </div>
-              <div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Target Course</span>
-                <span class="text-sm font-bold text-slate-700">{{ applicant.course?.course_name || 'N/A' }}</span>
-              </div>
-              <div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-1">Application Date</span>
-                <span class="text-sm font-bold text-slate-700">{{ applicant.created_at | date:'longDate' }}</span>
-              </div>
-            </div>
+  <div
+    class="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-[2rem] shadow-2xl shadow-slate-300/50 flex flex-col overflow-hidden transition-all duration-200 transform"
+    [class.scale-95]="isClosing()" [class.scale-100]="!isClosing()">
+
+    <div class="h-1 bg-gradient-to-r from-blue-600 via-blue-400 to-blue-200 shrink-0"></div>
+
+    <div class="px-8 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+          <span class="text-sm font-extrabold text-blue-600">{{ applicant.first_name[0] }}{{ applicant.last_name[0]
+            }}</span>
+        </div>
+        <div>
+          <h2 class="text-base font-extrabold text-slate-900 tracking-tight leading-none">{{ applicant.first_name }} {{
+            applicant.last_name }}</h2>
+          <div class="flex items-center gap-2 mt-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID {{ applicant.id }}</span>
+            <span class="w-px h-3 bg-slate-200"></span>
+            <span
+              [class]="'inline-flex px-2 py-0.5 text-[9px] font-black uppercase tracking-widest rounded-full border ' + getStatusClass(applicant.status)">
+              {{ applicant.status || 'Pending' }}
+            </span>
           </div>
         </div>
+      </div>
 
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm shadow-slate-100">
-            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
-              <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest">Submitted Documents</h3>
-            </div>
-            
-            <div class="p-6">
-              @if (isLoadingDocs()) {
-                <div class="flex flex-col items-center justify-center py-12 gap-3">
-                  <div class="w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-                  <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Documents...</p>
-                </div>
-              } @else if (errorMessage()) {
-                <div class="p-4 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 text-red-600">
-                  <span class="material-symbols-outlined">error</span>
-                  <p class="text-sm font-bold">{{ errorMessage() }}</p>
-                </div>
-              } @else if (documents().length === 0) {
-                <div class="flex flex-col items-center justify-center py-12 text-center">
-                  <span class="material-symbols-outlined text-slate-200 text-5xl mb-3">folder_off</span>
-                  <p class="text-sm font-bold text-slate-500">No documents uploaded</p>
-                  <p class="text-xs font-medium text-slate-400 mt-1">This applicant has not provided any files yet.</p>
-                </div>
+      <div class="flex items-center gap-2">
+        @if (isEditing()) {
+        <button (click)="saveChanges()" [disabled]="isSaving()"
+          class="h-9 px-4 flex items-center gap-1.5 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-200 transition-all disabled:opacity-60">
+          @if (isSaving()) {
+          <span class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          Saving…
+          } @else {
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+          Save Changes
+          }
+        </button>
+        }
+        <button (click)="toggleEdit()"
+          class="h-9 px-4 flex items-center gap-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider transition-colors"
+          [ngClass]="isEditing() ? 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'">
+          <span class="material-symbols-outlined text-[16px]">{{ isEditing() ? 'edit_off' : 'edit' }}</span>
+          {{ isEditing() ? 'Cancel' : 'Edit' }}
+        </button>
+        <button (click)="triggerClose()"
+          class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto custom-scrollbar">
+      <div class="px-8 py-8 space-y-10">
+
+        <div>
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.22em]">Identity</span>
+            <div class="h-px flex-1 bg-slate-100"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">First Name</label>
+              @if (isEditing()) {
+              <input type="text" [(ngModel)]="editForm.first_name"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
               } @else {
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  @for (doc of documents(); track doc.id) {
-                    <div 
-                      (click)="openDocument(doc)"
-                      [class.opacity-50]="doc.scan_status === 'infected'"
-                      [class.cursor-not-allowed]="doc.scan_status === 'infected'"
-                      [class.hover:-translate-y-1]="doc.scan_status !== 'infected'"
-                      [class.hover:shadow-md]="doc.scan_status !== 'infected'"
-                      [class.hover:border-blue-300]="doc.scan_status !== 'infected'"
-                      class="flex flex-col p-4 rounded-xl border border-slate-200 bg-white cursor-pointer transition-all group">
-                      
-                      <div class="flex items-start justify-between mb-3">
-                        <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors text-blue-600">
-                          <span class="material-symbols-outlined text-[20px]">
-                            {{ doc.mime_type.includes('pdf') ? 'picture_as_pdf' : 'image' }}
-                          </span>
-                        </div>
-                        @if (doc.scan_status === 'infected') {
-                          <span class="px-2 py-0.5 rounded text-[9px] font-black bg-red-100 text-red-700 uppercase tracking-widest">Infected</span>
-                        } @else {
-                          <span class="px-2 py-0.5 rounded text-[9px] font-black bg-slate-100 text-slate-500 uppercase tracking-widest">{{ formatBytes(doc.file_size) }}</span>
-                        }
-                      </div>
-                      
-                      <h4 class="text-sm font-bold text-slate-900 truncate mb-1" [title]="doc.original_filename">{{ doc.original_filename }}</h4>
-                      <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{{ formatType(doc.document_type) }}</p>
-                    </div>
-                  }
-                </div>
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.first_name }}</div>
+              }
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Middle Name</label>
+              @if (isEditing()) {
+              <input type="text" [(ngModel)]="editForm.middle_name"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.middle_name || '—' }}</div>
+              }
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Last Name</label>
+              @if (isEditing()) {
+              <input type="text" [(ngModel)]="editForm.last_name"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.last_name }}</div>
               }
             </div>
           </div>
         </div>
-        
+
+        <div>
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.22em]">Contact & Details</span>
+            <div class="h-px flex-1 bg-slate-100"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Email
+                Address</label>
+              <div class="relative">
+                <div
+                  class="w-full px-3.5 py-2.5 pr-9 rounded-xl border border-blue-100 bg-blue-50/60 text-sm font-semibold text-blue-800/70 cursor-not-allowed">
+                  {{ applicant.email }}</div>
+                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-blue-400" fill="currentColor"
+                  viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest pl-0.5">System Locked</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Phone Number</label>
+              @if (isEditing()) {
+              <input type="text" [(ngModel)]="editForm.phone_number"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.phone_number || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Date of
+                Birth</label>
+              @if (isEditing()) {
+              <app-date-picker theme="light" placeholder="Select date" [value]="editForm.date_of_birth ?? ''"
+                (valueChange)="editForm.date_of_birth = $event">
+              </app-date-picker>
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ (applicant.date_of_birth | date:'longDate') || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Target
+                Course</label>
+              @if (isEditing()) {
+              <app-dropdown [options]="courseOptions()" [selectedValue]="editForm.course_id"
+                (selectionChange)="onCourseChange($event)" placeholder="Select Course" theme="light">
+              </app-dropdown>
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.course?.course_name || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5 col-span-2">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Complete
+                Address</label>
+              @if (isEditing()) {
+              <input type="text" [(ngModel)]="editForm.address"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all">
+              } @else {
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.address || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-0.5">Application
+                Date</label>
+              <div
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50 text-sm font-semibold text-slate-700">
+                {{ applicant.created_at | date:'longDate' }}</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-3 mb-5">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.22em]">Submitted Documents</span>
+            <div class="h-px flex-1 bg-slate-100"></div>
+          </div>
+
+          @if (isLoadingDocs()) {
+          <div class="flex items-center justify-center py-10 gap-3">
+            <div class="w-6 h-6 border-[3px] border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading…</p>
+          </div>
+          } @else if (errorMessage()) {
+          <div class="p-4 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3 text-red-600">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <p class="text-sm font-bold">{{ errorMessage() }}</p>
+          </div>
+          } @else if (documents().length === 0) {
+          <div class="flex flex-col items-center justify-center py-10 text-center">
+            <span class="material-symbols-outlined text-slate-200 text-4xl mb-2">folder_off</span>
+            <p class="text-sm font-bold text-slate-400">No documents uploaded</p>
+          </div>
+          } @else {
+          <div class="rounded-2xl border border-slate-100 overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-slate-50/80 border-b border-slate-100">
+                  <th class="text-left px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">File
+                  </th>
+                  <th class="text-left px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type
+                  </th>
+                  <th class="text-left px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Size
+                  </th>
+                  <th class="text-left px-5 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status
+                  </th>
+                  <th class="px-5 py-3"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (doc of documents(); track doc.id) {
+                <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50/60 transition-colors group">
+                  <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-2.5">
+                      <div
+                        class="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
+                        <span class="material-symbols-outlined text-[15px]">{{ doc.mime_type.includes('pdf') ?
+                          'picture_as_pdf' : 'image' }}</span>
+                      </div>
+                      <span class="font-semibold text-slate-800 truncate max-w-[160px]"
+                        [title]="doc.original_filename">{{ doc.original_filename }}</span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-xs font-semibold text-slate-500">{{ formatType(doc.document_type) }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <span class="text-xs font-semibold text-slate-500">{{ formatBytes(doc.file_size) }}</span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    @if (doc.scan_status === 'infected') {
+                    <span
+                      class="inline-flex px-2 py-0.5 rounded-full text-[9px] font-black bg-red-50 text-red-600 border border-red-100 uppercase tracking-widest">Infected</span>
+                    } @else {
+                    <span
+                      class="inline-flex px-2 py-0.5 rounded-full text-[9px] font-black bg-green-50 text-green-600 border border-green-100 uppercase tracking-widest">Clean</span>
+                    }
+                  </td>
+                  <td class="px-5 py-3.5 text-right">
+                    @if (doc.scan_status !== 'infected') {
+                    <button (click)="openDocument(doc)"
+                      class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 uppercase tracking-widest transition-colors">
+                      <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                      Open
+                    </button>
+                    }
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          }
+        </div>
+
       </div>
     </div>
   </div>
