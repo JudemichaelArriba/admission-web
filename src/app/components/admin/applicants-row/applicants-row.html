@@ -1,0 +1,58 @@
+<td class="px-8 py-6">
+  <span class="font-mono text-[11px] font-bold text-blue-600 bg-blue-50/50 border border-blue-100 px-2 py-1 rounded-md">
+    {{ applicant.id }}
+  </span>
+</td>
+
+<td class="px-8 py-6">
+  <div class="flex flex-col">
+    <p class="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+      {{ applicant.first_name }} {{ applicant.last_name }}
+    </p>
+    <div class="flex items-center gap-2 mt-0.5">
+      <span class="text-[11px] text-slate-400 font-medium">{{ applicant.email }}</span>
+    </div>
+  </div>
+</td>
+
+<td class="px-6 py-6">
+  <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+    <span class="text-xs font-bold text-slate-700">{{ applicant.course?.course_name || 'N/A' }}</span>
+  </div>
+</td>
+
+<td class="px-6 py-6 text-center">
+  <span
+    [class]="'inline-flex px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ' + getStatusClass(applicant.status)">
+    {{ applicant.status || 'Pending' }}
+  </span>
+</td>
+
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold italic">
+  {{ applicant.created_at | date:'MMM d, y' }}
+</td>
+
+<td class="px-8 py-6">
+  <div class="flex items-center justify-end gap-2 transition-all">
+
+    @if (isPending) {
+    <button
+      class="w-9 h-9 flex items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-500 hover:text-white transition-all"
+      title="Approve">
+      <span class="material-symbols-outlined text-[18px]">check_circle</span>
+    </button>
+
+    <button
+      class="w-9 h-9 flex items-center justify-center rounded-xl bg-red-50 text-red-600 border border-red-100 hover:bg-red-500 hover:text-white transition-all"
+      title="Reject">
+      <span class="material-symbols-outlined text-[18px]">cancel</span>
+    </button>
+    } @else {
+    <div class="flex items-center gap-1 text-slate-300 select-none">
+      <span class="material-symbols-outlined text-[16px]">lock</span>
+      <span class="text-[9px] font-black uppercase tracking-tighter">Finalized</span>
+    </div>
+    }
+
+  </div>
+</td>

@@ -15,4 +15,7 @@ export class ApplicantService {
   updateApplicant(id: number, data: Partial<Applicant>): Observable<Applicant> {
     return this.http.put<Applicant>(`${this.API}/applicants/${id}`, data);
   }
+  getApplicants(): Observable<Applicant[]> {
+    return this.http.get<Applicant[]>(`${this.API}/applicants`);
+  }
 }
