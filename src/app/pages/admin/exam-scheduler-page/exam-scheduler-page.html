@@ -53,7 +53,11 @@
           <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Fetching Schedules...</p>
         </div>
       } @else {
-        <app-schedule-table [schedules]="filteredSchedules()"></app-schedule-table>
+        <app-schedule-table 
+          [schedules]="filteredSchedules()" 
+          (manageStudents)="openManageStudentsModal($event)"
+          (viewDetails)="openScheduleDetails($event)">
+        </app-schedule-table>
       }
 
       <div class="bg-slate-50/50 border-t border-slate-100 px-8 py-5 flex items-center justify-between">
@@ -76,4 +80,21 @@
     (close)="isAddModalOpen.set(false)" 
     (saved)="handleScheduleAdded($event)">
   </app-schedule-add-modal>
+}
+
+@if (selectedScheduleDetails()) {
+  <app-schedule-details-modal
+    [schedule]="selectedScheduleDetails()!"
+    (close)="selectedScheduleDetails.set(null)"
+    (scheduleUpdated)="handleScheduleUpdated($event)"
+    (openAddStudent)="openManageStudentsModal($event)">
+  </app-schedule-details-modal>
+}
+
+@if (selectedScheduleForStudents()) {
+  <app-schedule-add-student-modal
+    [scheduleId]="selectedScheduleForStudents()!.id"
+    (close)="selectedScheduleForStudents.set(null)"
+    (saved)="handleStudentsAdded(selectedScheduleForStudents()!.id, $event)">
+  </app-schedule-add-student-modal>
 }

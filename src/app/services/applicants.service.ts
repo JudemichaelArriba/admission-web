@@ -28,4 +28,7 @@ export class ApplicantService {
       { action, ...(reason ? { reason } : {}) }
     );
   }
+  getUnscheduledApplicants(): Observable<Applicant[]> {
+    return this.http.get<Applicant[]>(`${this.API}/applicants/unscheduled`);
+  }
 }

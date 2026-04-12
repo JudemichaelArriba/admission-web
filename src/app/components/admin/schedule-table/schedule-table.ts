@@ -12,4 +12,5 @@ import { ScheduleRow } from '../schedule-row/schedule-row';
 export class ScheduleTable {
   @Input({ required: true }) schedules: ExamSchedule[] = [];
   @Output() manageStudents = new EventEmitter<ExamSchedule>();
+  @Output() viewDetails = new EventEmitter<ExamSchedule>();
 }
