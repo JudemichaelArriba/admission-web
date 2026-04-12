@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { ExamsService } from '../../../services/exams.service';
 import { EntranceExam } from '../../../models/entrance-exam.model';
 import { ExamTable } from '../../../components/admin/exam-table/exam-table';
-
+import { ExamEvaluateModal } from '../../../components/admin/exam-evaluate-modal/exam-evaluate-modal';
 @Component({
   selector: 'app-exam-evaluation-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, ExamTable],
+  imports: [CommonModule, FormsModule, ExamTable, ExamEvaluateModal],
   templateUrl: './exam-evaluation-page.html',
 })
 export class ExamEvaluationPage implements OnInit {
@@ -16,7 +16,8 @@ export class ExamEvaluationPage implements OnInit {
 
   allExams = signal<EntranceExam[]>([]);
   isLoading = signal(true);
-  
+  selectedExamForEvaluation = signal<EntranceExam | null>(null);
+
   searchTerm = signal('');
   activeFilter = signal<'all' | 'ungraded' | 'graded'>('all');
 
@@ -36,7 +37,7 @@ export class ExamEvaluationPage implements OnInit {
     }
 
     if (search) {
-      list = list.filter(e => 
+      list = list.filter(e =>
         e.id.toString().includes(search) ||
         `${e.applicant?.first_name} ${e.applicant?.last_name}`.toLowerCase().includes(search) ||
         e.schedule.room.toLowerCase().includes(search)
@@ -72,6 +73,15 @@ export class ExamEvaluationPage implements OnInit {
     this.activeFilter.set(filter);
   }
 
+
   handleAction(exam: EntranceExam) {
+    this.selectedExamForEvaluation.set(exam);
+  }
+
+  handleExamEvaluated(updatedExam: EntranceExam) {
+    this.allExams.update(exams =>
+      exams.map(e => e.id === updatedExam.id ? updatedExam : e)
+    );
+    this.selectedExamForEvaluation.set(null); 
   }
 }

@@ -77,3 +77,11 @@
   </section>
 
 </div>
+
+@if (selectedExamForEvaluation()) {
+  <app-exam-evaluate-modal
+    [exam]="selectedExamForEvaluation()!"
+    (close)="selectedExamForEvaluation.set(null)"
+    (saved)="handleExamEvaluated($event)">
+  </app-exam-evaluate-modal>
+}
