@@ -1,5 +1,6 @@
 <td class="px-8 py-4">
-    <div class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
+    <div
+        class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
         {{ schedule.id }}
     </div>
 </td>
@@ -38,7 +39,7 @@
 
 <td class="px-8 py-4 text-right">
     <div class="flex items-center justify-end gap-2">
-        <button
+        <button (click)="manage.emit(schedule); $event.stopPropagation()"
             class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
             title="Manage Students">
             <span class="material-symbols-outlined text-[18px]">group</span>

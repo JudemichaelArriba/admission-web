@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExamSchedule } from '../../../models/entrance-exam.model';
 import { ScheduleRow } from '../schedule-row/schedule-row';
@@ -11,4 +11,5 @@ import { ScheduleRow } from '../schedule-row/schedule-row';
 })
 export class ScheduleTable {
   @Input({ required: true }) schedules: ExamSchedule[] = [];
+  @Output() manageStudents = new EventEmitter<ExamSchedule>();
 }

@@ -13,7 +13,13 @@
 
     <tbody class="divide-y divide-slate-50">
       @for (schedule of schedules; track schedule.id) {
-        <tr app-schedule-row [schedule]="schedule" class="hover:bg-blue-50/30 transition-all group cursor-pointer"></tr>
+        
+        <tr app-schedule-row 
+            [schedule]="schedule" 
+            (manage)="manageStudents.emit($event)" 
+            class="hover:bg-blue-50/30 transition-all group cursor-pointer">
+        </tr>
+
       } @empty {
         <tr>
           <td colspan="6" class="px-8 py-32 text-center">

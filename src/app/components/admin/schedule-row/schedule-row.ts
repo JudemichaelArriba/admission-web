@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExamSchedule } from '../../../models/entrance-exam.model';
 
@@ -11,6 +11,7 @@ import { ExamSchedule } from '../../../models/entrance-exam.model';
 })
 export class ScheduleRow {
   @Input({ required: true }) schedule!: ExamSchedule;
+  @Output() manage = new EventEmitter<ExamSchedule>();
 
   // Helper properties to safely convert Laravel's date strings into JS Dates
   get normalizedDate(): Date | null {
