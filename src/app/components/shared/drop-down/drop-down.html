@@ -1,20 +1,23 @@
 <div class="relative w-full space-y-1.5">
     @if (label) {
-    <label class="block text-[9px] font-semibold text-slate-500 uppercase tracking-[0.18em] pl-1 mb-1 font-mono">
+    <label class="block text-[9px] font-semibold uppercase tracking-[0.18em] pl-1 mb-1 font-mono text-slate-500">
         {{ label }}
     </label>
     }
 
+    <!-- Trigger -->
     <div (click)="toggle()"
         class="group relative w-full px-4 py-3 rounded-2xl text-sm cursor-pointer flex justify-between items-center transition-all duration-300 select-none overflow-hidden"
         [ngClass]="{
-          'bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.14] hover:bg-white/[0.06]': !isOpen,
-          'bg-slate-900/80 border border-blue-500/40 ring-2 ring-blue-500/10 shadow-lg shadow-blue-500/5': isOpen,
-          'opacity-40 cursor-wait pointer-events-none': isLoading
+            'bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.14] hover:bg-white/[0.06]':  !isOpen &&  isDark,
+            'bg-black/[0.04] border border-black/[0.08] hover:border-black/[0.14] hover:bg-black/[0.06]': !isOpen && !isDark,
+            'bg-slate-900/80 border border-blue-500/40 ring-2 ring-blue-500/10 shadow-lg shadow-blue-500/5':  isOpen &&  isDark,
+            'bg-white/80     border border-blue-500/40 ring-2 ring-blue-500/10 shadow-lg shadow-blue-500/5':  isOpen && !isDark,
+            'opacity-40 cursor-wait pointer-events-none': isLoading
         }">
 
         <span
-            class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent transition-opacity duration-300"
+            class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent transition-opacity duration-300"
             [ngClass]="{ 'opacity-0': !isOpen, 'opacity-100': isOpen }"></span>
 
         @if (isOpen) {
@@ -23,18 +26,22 @@
         }
 
         <span class="relative font-medium transition-colors duration-200" [ngClass]="{
-            'text-slate-600 italic font-normal': !selectedValue && !isLoading,
-            'text-slate-200': selectedValue && !isOpen,
-            'text-blue-300': selectedValue && isOpen,
-            'text-slate-500': isLoading
-        }">
+                'italic font-normal':          !selectedValue && !isLoading,
+                'text-slate-600':              !selectedValue && !isLoading &&  isDark,
+                'text-slate-400':              !selectedValue && !isLoading && !isDark,
+                'text-slate-200':               selectedValue && !isOpen &&  isDark,
+                'text-slate-700':               selectedValue && !isOpen && !isDark,
+                'text-blue-300':                selectedValue &&  isOpen,
+                'text-slate-500':              isLoading
+            }">
             {{ isLoading ? 'Loading…' : getSelectedLabel }}
         </span>
 
         <span class="relative ml-2 flex items-center justify-center w-6 h-6 rounded-lg transition-all duration-300"
             [ngClass]="{
-                'bg-white/5 text-slate-500 group-hover:bg-white/8 group-hover:text-slate-300': !isOpen,
-                'bg-blue-500/15 text-blue-400 rotate-180': isOpen
+                'bg-white/[0.04] border border-white/[0.06] text-slate-500 group-hover:bg-white/[0.08] group-hover:text-slate-300': !isOpen &&  isDark,
+                'bg-black/[0.04] border border-black/[0.06] text-slate-400 group-hover:bg-black/[0.08] group-hover:text-slate-700': !isOpen && !isDark,
+                'bg-blue-500/15  border border-blue-500/30  text-blue-400 rotate-180':  isOpen
             }">
             <svg class="w-3.5 h-3.5 transition-transform duration-300" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor" stroke-width="2.5">
@@ -43,45 +50,54 @@
         </span>
     </div>
 
+    <!-- Dropdown panel -->
     @if (isOpen) {
-    <div class="absolute z-[110] w-full bg-slate-950/95 backdrop-blur-3xl border border-white/[0.08] rounded-2xl shadow-2xl shadow-black/60 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-        [ngClass]="{
-          'bottom-full mb-3': isDropdownAbove,
-          'top-full mt-3': !isDropdownAbove
-        }">
+    <div class="absolute z-[110] w-full backdrop-blur-3xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        [ngClass]="[
+            isDark
+                ? 'bg-slate-950/95 border border-white/[0.08] shadow-2xl shadow-black/60'
+                : 'bg-white/98     border border-black/[0.07] shadow-2xl shadow-black/20',
+            isDropdownAbove ? 'bottom-full mb-3' : 'top-full mt-3'
+        ]">
 
-        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+        <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/20 to-transparent"></div>
 
         <div class="max-h-60 overflow-y-auto
              [&::-webkit-scrollbar]:w-[3px]
              [&::-webkit-scrollbar-track]:bg-transparent
              [&::-webkit-scrollbar-thumb]:rounded-full
-             [&::-webkit-scrollbar-thumb]:bg-white/10
-             hover:[&::-webkit-scrollbar-thumb]:bg-blue-500/40
-             [scrollbar-width:thin]
-             [scrollbar-color:rgba(255,255,255,0.1)_transparent]">
+             [scrollbar-width:thin]"
+             [ngClass]="isDark
+                ? '[&::-webkit-scrollbar-thumb]:bg-white/10 hover:[&::-webkit-scrollbar-thumb]:bg-blue-500/40 [scrollbar-color:rgba(255,255,255,0.1)_transparent]'
+                : '[&::-webkit-scrollbar-thumb]:bg-black/10 hover:[&::-webkit-scrollbar-thumb]:bg-blue-500/40 [scrollbar-color:rgba(0,0,0,0.1)_transparent]'">
 
             @if (options.length === 0) {
-            <div class="px-5 py-4 text-xs text-slate-600 italic font-mono">
+            <div class="px-5 py-4 text-xs italic font-mono"
+                [ngClass]="isDark ? 'text-slate-600' : 'text-slate-400'">
                 — no options available —
             </div>
             }
 
             @for (option of options; track option.value) {
             <div (click)="selectOption(option)"
-                class="group relative px-4 py-3 cursor-pointer flex flex-col transition-all duration-150 border-b border-white/[0.04] last:border-0 hover:bg-blue-600/15">
+                class="group relative px-4 py-3 cursor-pointer flex flex-col transition-all duration-150 last:border-0 hover:bg-blue-600/15"
+                [ngClass]="isDark
+                    ? 'border-b border-white/[0.04]'
+                    : 'border-b border-black/[0.04]'">
 
                 <span
                     class="absolute left-0 inset-y-2 w-[2px] rounded-r-full bg-blue-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-200 origin-center"></span>
 
-                <span
-                    class="text-sm text-slate-300 group-hover:text-white font-medium transition-colors duration-150 pl-1">
+                <span class="text-sm font-medium transition-colors duration-150 pl-1"
+                    [ngClass]="isDark
+                        ? 'text-slate-300 group-hover:text-white'
+                        : 'text-slate-600 group-hover:text-slate-900'">
                     {{ option.label }}
                 </span>
 
                 @if (option.sublabel) {
-                <span
-                    class="text-[9px] text-slate-600 group-hover:text-blue-400/70 uppercase tracking-[0.15em] font-mono mt-0.5 pl-1 transition-colors duration-150">
+                <span class="text-[9px] uppercase tracking-[0.15em] font-mono mt-0.5 pl-1 transition-colors duration-150 group-hover:text-blue-400/70"
+                    [ngClass]="isDark ? 'text-slate-600' : 'text-slate-400'">
                     {{ option.sublabel }}
                 </span>
                 }
@@ -89,9 +105,8 @@
             }
         </div>
 
-        <div
-            class="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-slate-950/80 to-transparent rounded-b-2xl">
-        </div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t to-transparent rounded-b-2xl"
+            [ngClass]="isDark ? 'from-slate-950/80' : 'from-white'"></div>
     </div>
     }
 </div>

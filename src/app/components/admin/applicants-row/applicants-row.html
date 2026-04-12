@@ -1,0 +1,68 @@
+<td class="px-8 py-6">
+  <div class="text-sm font-black text-slate-700">
+    {{ applicant.id }}
+  </div>
+</td>
+
+<td class="px-8 py-6">
+  <div class="flex flex-col">
+    <p class="text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
+      {{ applicant.first_name }} {{ applicant.last_name }}
+    </p>
+    <div class="flex items-center gap-2 mt-0.5">
+      <span class="text-[11px] text-slate-400 font-medium">{{ applicant.email }}</span>
+    </div>
+  </div>
+</td>
+
+<td class="px-6 py-6">
+  <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+    <span class="text-xs font-bold text-slate-700">{{ applicant.course?.course_name || 'N/A' }}</span>
+  </div>
+</td>
+
+<td class="px-6 py-6 text-center">
+  <span
+    [class]="'inline-flex px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ' + getStatusClass(applicant.status)">
+    {{ applicant.status || 'Pending' }}
+  </span>
+</td>
+
+<td class="px-6 py-6 text-sm text-slate-500 font-semibold italic">
+  {{ applicant.created_at | date:'MMM d, y' }}
+</td>
+
+<td class="px-8 py-6">
+  <div class="flex items-center justify-end gap-3 transition-all">
+    @if (isPending) {
+      <button
+        (click)="$event.stopPropagation(); approveClicked.emit(applicant)"
+        [disabled]="isProcessing"
+        class="flex items-center justify-center text-blue-600 hover:text-blue-700 hover:scale-110 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed transition-all"
+        title="Approve">
+        @if (isApproving) {
+          <span class="w-5 h-5 border-[2.5px] border-blue-200 border-t-blue-600 rounded-full animate-spin"></span>
+        } @else {
+          <span class="material-symbols-outlined text-[24px]">check_circle</span>
+        }
+      </button>
+
+      <button
+        (click)="$event.stopPropagation(); rejectClicked.emit(applicant)"
+        [disabled]="isProcessing"
+        class="flex items-center justify-center text-red-600 hover:text-red-700 hover:scale-110 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed transition-all"
+        title="Reject">
+        @if (isRejecting) {
+          <span class="w-5 h-5 border-[2.5px] border-red-200 border-t-red-600 rounded-full animate-spin"></span>
+        } @else {
+          <span class="material-symbols-outlined text-[24px]">cancel</span>
+        }
+      </button>
+    } @else {
+      <div class="flex items-center gap-1 text-slate-300 select-none">
+        <span class="material-symbols-outlined text-[16px]">lock</span>
+        <span class="text-[9px] font-black uppercase tracking-tighter">Finalized</span>
+      </div>
+    }
+  </div>
+</td>

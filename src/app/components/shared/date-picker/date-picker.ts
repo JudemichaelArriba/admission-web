@@ -13,6 +13,9 @@ export class DatePickerComponent {
   @Input() value: string = '';
   @Input() maxDate: string | null = null;
   @Input() theme: 'dark' | 'light' = 'dark';
+
+  @Input() disablePastDates: boolean = false; 
+  
   @Output() valueChange = new EventEmitter<string>();
 
   isOpen = false;
@@ -79,13 +82,26 @@ export class DatePickerComponent {
     this.years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i).reverse();
   }
 
+ 
   isDateDisabled(day: number | null): boolean {
-    if (!day || !this.maxDate) return false;
+    if (!day) return true; 
+
     const cellDate = new Date(this.displayYear, this.displayMonth, day);
-    const limitDate = new Date(this.maxDate);
-    limitDate.setHours(0, 0, 0, 0);
     cellDate.setHours(0, 0, 0, 0);
-    return cellDate > limitDate;
+
+    if (this.disablePastDates) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (cellDate < today) return true;
+    }
+
+    if (this.maxDate) {
+      const limitDate = new Date(this.maxDate);
+      limitDate.setHours(0, 0, 0, 0);
+      if (cellDate > limitDate) return true;
+    }
+
+    return false;
   }
 
   selectYear(year: number) {
@@ -101,8 +117,10 @@ export class DatePickerComponent {
 
   selectDate(day: number | null) {
     if (!day || this.isDateDisabled(day)) return;
-    const date = new Date(this.displayYear, this.displayMonth, day);
-    this.value = date.toISOString().split('T')[0];
+    const paddedMonth = (this.displayMonth + 1).toString().padStart(2, '0');
+    const paddedDay = day.toString().padStart(2, '0');
+    this.value = `${this.displayYear}-${paddedMonth}-${paddedDay}`;
+    
     this.valueChange.emit(this.value);
     this.isOpen = false;
   }

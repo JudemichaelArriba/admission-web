@@ -1,0 +1,43 @@
+<div class="overflow-x-auto">
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="bg-slate-50/50 border-b border-slate-100">
+        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 w-24">Exam ID</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400">Applicant Details</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400">Schedule Info</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 text-center">Status</th>
+        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 text-right">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-slate-50 relative min-h-[200px]">
+      @if (isLoading) {
+        <tr>
+          <td colspan="5" class="px-8 py-20 text-center">
+            <div class="flex flex-col items-center justify-center gap-4">
+              <div class="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
+              <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Loading Evaluation Queue...</p>
+            </div>
+          </td>
+        </tr>
+      } @else if (exams.length === 0) {
+        <tr>
+          <td colspan="5" class="px-8 py-32 text-center">
+            <div class="flex flex-col items-center justify-center gap-3">
+              <span class="material-symbols-outlined text-slate-200 text-5xl">fact_check</span>
+              <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No exams found in queue</p>
+            </div>
+          </td>
+        </tr>
+      } @else {
+        @for (exam of exams; track exam.id) {
+          <tr app-exam-row 
+              [exam]="exam" 
+              (actionClick)="actionClick.emit($event)"
+              class="hover:bg-blue-50/30 transition-all group">
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,36 @@
+<div class="overflow-x-auto">
+  <table class="w-full text-left border-collapse">
+    <thead>
+      <tr class="bg-slate-50/50 border-b border-slate-100">
+        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 w-24">ID</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400">Date & Time</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400">Room</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 text-center">Assigned
+          Students</th>
+        <th class="px-6 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 text-center">Status</th>
+        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[.15em] text-slate-400 text-right">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-slate-50">
+      @for (schedule of schedules; track schedule.id) {
+
+      <tr app-schedule-row [schedule]="schedule" [isDeleting]="deletingIds.has(schedule.id)"
+        (manage)="manageStudents.emit($event)" (viewDetails)="viewDetails.emit($event)"
+        (delete)="deleteSchedule.emit($event)" class="hover:bg-blue-50/30 transition-all group"
+        [class.cursor-pointer]="!deletingIds.has(schedule.id)">
+      </tr>
+
+      } @empty {
+      <tr>
+        <td colspan="6" class="px-8 py-32 text-center">
+          <div class="flex flex-col items-center justify-center gap-3">
+            <span class="material-symbols-outlined text-slate-200 text-5xl">event_busy</span>
+            <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">No schedules found</p>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,280 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+
+  <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-md" (click)="triggerClose()"></div>
+
+  <div class="relative w-full max-w-3xl max-h-[90vh] bg-white rounded-[2rem] shadow-2xl shadow-slate-400/25 flex flex-col overflow-hidden">
+
+    <div class="h-1 w-full bg-gradient-to-r from-blue-600 via-blue-400 to-indigo-400 shrink-0"></div>
+
+    <div class="absolute top-1 right-0 w-72 h-40 bg-gradient-to-bl from-blue-50/60 to-transparent pointer-events-none rounded-tr-[2rem]"></div>
+
+    <div class="relative px-7 py-5 border-b border-slate-100/80 flex items-center justify-between shrink-0">
+
+      <div class="flex items-center gap-4">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-200/60">
+          <span class="text-sm font-black text-white tracking-tight">
+            {{ applicant.first_name[0] }}{{ applicant.last_name[0] }}
+          </span>
+        </div>
+
+        <div>
+          <h2 class="text-base font-black text-slate-900 tracking-tight leading-none">
+            {{ applicant.first_name }} {{ applicant.last_name }}
+          </h2>
+          <div class="flex items-center gap-2 mt-1.5">
+            <span class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">ID · {{ applicant.id }}</span>
+            <span class="w-px h-3 bg-slate-200"></span>
+            <span [class]="'inline-flex items-center px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] rounded-full border ' + getStatusClass(applicant.status)">
+              {{ applicant.status || 'Pending' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        @if (isEditing()) {
+          <button (click)="saveChanges()" [disabled]="isSaving()"
+            class="h-9 px-4 flex items-center gap-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 shadow-md shadow-blue-200/70 hover:-translate-y-px active:translate-y-0 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            @if (isSaving()) {
+              <span class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              Saving…
+            } @else {
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              Save Changes
+            }
+          </button>
+        }
+
+        <button (click)="toggleEdit()"
+          class="h-9 px-4 flex items-center gap-1.5 rounded-xl border text-[11px] font-black uppercase tracking-wider transition-all duration-150"
+          [ngClass]="isEditing()
+            ? 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 hover:border-slate-300'">
+          <span class="material-symbols-outlined text-[15px]">{{ isEditing() ? 'edit_off' : 'edit' }}</span>
+          {{ isEditing() ? 'Cancel' : 'Edit' }}
+        </button>
+
+        <button (click)="triggerClose()"
+          class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:bg-blue-50 hover:border-blue-100 hover:text-blue-500 transition-colors duration-150">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto custom-scrollbar">
+      <div class="px-7 py-7 space-y-9">
+
+        <section>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex items-center gap-2 shrink-0">
+              <div class="w-5 h-5 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[12px] text-blue-600">badge</span>
+              </div>
+              <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.22em]">Identity</span>
+            </div>
+            <div class="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent"></div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">First Name</label>
+              @if (isEditing()) {
+                <input type="text" [(ngModel)]="editForm.first_name"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 hover:border-slate-300 outline-none transition-all duration-150">
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.first_name }}</div>
+              }
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Middle Name</label>
+              @if (isEditing()) {
+                <input type="text" [(ngModel)]="editForm.middle_name"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 hover:border-slate-300 outline-none transition-all duration-150">
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.middle_name || '—' }}</div>
+              }
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Last Name</label>
+              @if (isEditing()) {
+                <input type="text" [(ngModel)]="editForm.last_name"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 hover:border-slate-300 outline-none transition-all duration-150">
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.last_name }}</div>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex items-center gap-2 shrink-0">
+              <div class="w-5 h-5 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[12px] text-blue-600">contacts</span>
+              </div>
+              <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.22em]">Contact & Details</span>
+            </div>
+            <div class="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Email Address</label>
+              <div class="relative">
+                <div class="w-full px-3.5 py-2.5 pr-9 rounded-xl border border-blue-100 bg-blue-50/50 text-sm font-semibold text-blue-700/70 cursor-not-allowed select-none">
+                  {{ applicant.email }}
+                </div>
+                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+              <p class="text-[9px] font-black text-blue-400 uppercase tracking-[0.18em] pl-0.5">System Locked</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Phone Number</label>
+              @if (isEditing()) {
+                <input type="text" [(ngModel)]="editForm.phone_number"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 hover:border-slate-300 outline-none transition-all duration-150">
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.phone_number || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Date of Birth</label>
+              @if (isEditing()) {
+                <app-date-picker theme="light" placeholder="Select date" [value]="editForm.date_of_birth ?? ''" (valueChange)="editForm.date_of_birth = $event"></app-date-picker>
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ (applicant.date_of_birth | date:'longDate') || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Target Course</label>
+              @if (isEditing()) {
+                <app-dropdown [options]="courseOptions()" [selectedValue]="editForm.course_id" (selectionChange)="onCourseChange($event)" placeholder="Select Course" theme="light"></app-dropdown>
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.course?.course_name || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5 col-span-2">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Complete Address</label>
+              @if (isEditing()) {
+                <input type="text" [(ngModel)]="editForm.address"
+                  class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 hover:border-slate-300 outline-none transition-all duration-150">
+              } @else {
+                <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.address || '—' }}</div>
+              }
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.16em] pl-0.5">Application Date</label>
+              <div class="w-full px-3.5 py-2.5 rounded-xl border border-slate-100 bg-slate-50/80 text-sm font-semibold text-slate-700">{{ applicant.created_at | date:'longDate' }}</div>
+            </div>
+
+          </div>
+        </section>
+
+        <section>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="flex items-center gap-2 shrink-0">
+              <div class="w-5 h-5 rounded-lg bg-blue-100 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[12px] text-blue-600">folder_open</span>
+              </div>
+              <span class="text-[10px] font-black text-slate-500 uppercase tracking-[0.22em]">Submitted Documents</span>
+            </div>
+            <div class="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent"></div>
+            @if (!isLoadingDocs() && documents().length > 0) {
+              <span class="shrink-0 text-[9px] font-black text-slate-400 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-0.5 uppercase tracking-widest">
+                {{ documents().length }} file{{ documents().length !== 1 ? 's' : '' }}
+              </span>
+            }
+          </div>
+
+          @if (isLoadingDocs()) {
+            <div class="flex items-center justify-center py-12 gap-3">
+              <div class="w-5 h-5 border-[3px] border-blue-100 border-t-blue-500 rounded-full animate-spin"></div>
+              <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Loading Documents…</p>
+            </div>
+          } @else if (errorMessage()) {
+            <div class="p-4 bg-red-50 rounded-2xl border border-red-100 flex items-center gap-3 text-red-600">
+              <span class="material-symbols-outlined text-[18px]">error</span>
+              <p class="text-sm font-bold">{{ errorMessage() }}</p>
+            </div>
+          } @else if (documents().length === 0) {
+            <div class="flex flex-col items-center justify-center py-12 gap-2 text-center">
+              <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mb-1">
+                <span class="material-symbols-outlined text-slate-300 text-[26px]">folder_off</span>
+              </div>
+              <p class="text-sm font-bold text-slate-400">No documents uploaded</p>
+              <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">Nothing to display</p>
+            </div>
+          } @else {
+            <div class="rounded-2xl border border-slate-100 overflow-hidden shadow-sm shadow-slate-100/80">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-100">
+                    <th class="text-left px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.18em]">File</th>
+                    <th class="text-left px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.18em]">Type</th>
+                    <th class="text-left px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.18em]">Size</th>
+                    <th class="text-left px-5 py-3 text-[9px] font-black text-slate-400 uppercase tracking-[0.18em]">Status</th>
+                    <th class="px-5 py-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (doc of documents(); track doc.id) {
+                    <tr class="border-b border-slate-100 last:border-0 hover:bg-blue-50/20 transition-colors duration-150">
+                      <td class="px-5 py-3.5">
+                        <div class="flex items-center gap-3">
+                          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+                            [ngClass]="doc.mime_type.includes('pdf') ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'">
+                            <span class="material-symbols-outlined text-[16px]">{{ doc.mime_type.includes('pdf') ? 'picture_as_pdf' : 'image' }}</span>
+                          </div>
+                          <span class="text-xs font-semibold text-slate-800 truncate max-w-[150px]" [title]="doc.original_filename">
+                            {{ doc.original_filename }}
+                          </span>
+                        </div>
+                      </td>
+                      <td class="px-5 py-3.5">
+                        <span class="text-xs font-semibold text-slate-500">{{ formatType(doc.document_type) }}</span>
+                      </td>
+                      <td class="px-5 py-3.5">
+                        <span class="text-xs font-semibold text-slate-400">{{ formatBytes(doc.file_size) }}</span>
+                      </td>
+                      <td class="px-5 py-3.5">
+                        @if (doc.scan_status === 'infected') {
+                          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black bg-red-50 text-red-600 border border-red-100 uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>Infected
+                          </span>
+                        } @else {
+                          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] font-black bg-green-50 text-green-600 border border-green-100 uppercase tracking-wider">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></span>Clean
+                          </span>
+                        }
+                      </td>
+                      <td class="px-5 py-3.5 text-right">
+                        @if (doc.scan_status !== 'infected') {
+                          <button (click)="openDocument(doc)"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-black text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 hover:border-blue-200 uppercase tracking-wider hover:-translate-y-px active:translate-y-0 transition-all duration-150">
+                            <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                            Open
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>

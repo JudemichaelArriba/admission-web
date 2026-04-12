@@ -15,4 +15,20 @@ export class ApplicantService {
   updateApplicant(id: number, data: Partial<Applicant>): Observable<Applicant> {
     return this.http.put<Applicant>(`${this.API}/applicants/${id}`, data);
   }
+  getApplicants(): Observable<Applicant[]> {
+    return this.http.get<Applicant[]>(`${this.API}/applicants`);
+  }
+   updateStatus(
+    id: number,
+    action: 'approve' | 'reject',
+    reason?: string
+  ): Observable<{ message: string; applicant: Applicant }> {
+    return this.http.post<{ message: string; applicant: Applicant }>(
+      `${this.API}/applicants/${id}/status`,
+      { action, ...(reason ? { reason } : {}) }
+    );
+  }
+  getUnscheduledApplicants(): Observable<Applicant[]> {
+    return this.http.get<Applicant[]>(`${this.API}/applicants/unscheduled`);
+  }
 }
