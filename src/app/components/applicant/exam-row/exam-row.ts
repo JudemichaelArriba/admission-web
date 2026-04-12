@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { DatePipe, NgClass } from '@angular/common';
 import { ExamRow } from '../../../models/exam-row.model';
 
@@ -12,4 +12,12 @@ import { ExamRow } from '../../../models/exam-row.model';
 export class ExamRowComponent {
   @Input({ required: true }) exam!: ExamRow;
   @Input({ required: true }) index!: number;
+  @Output() viewResult = new EventEmitter<ExamRow>();
+
+  @HostListener('click')
+  onClick() {
+    if (this.exam.status === 'evaluated') {
+      this.viewResult.emit(this.exam);
+    }
+  }
 }

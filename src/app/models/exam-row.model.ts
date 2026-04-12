@@ -5,4 +5,5 @@ export interface ExamRow {
     room: string;
     status: 'scheduled' | 'evaluated' | 'completed';
     applicantName?: string; 
+    examScore?: number | null;
 }
