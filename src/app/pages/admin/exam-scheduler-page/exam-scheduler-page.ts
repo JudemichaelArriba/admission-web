@@ -8,7 +8,7 @@ import { ScheduleAddModal } from '../../../components/admin/schedule-add-modal/s
 import { ScheduleAddStudentModal } from '../../../components/admin/schedule-add-student-modal/schedule-add-student-modal';
 import { ScheduleDetailsModal } from '../../../components/admin/schedule-details-modal/schedule-details-modal'; 
 import { EntranceExam } from '../../../models/entrance-exam.model';
-
+import { DialogService } from '../../../services/dialog.service';
 @Component({
   selector: 'app-exam-scheduler-page',
   standalone: true,
@@ -17,7 +17,7 @@ import { EntranceExam } from '../../../models/entrance-exam.model';
 })
 export class ExamSchedulerPage implements OnInit {
   private readonly schedulesService = inject(SchedulesService);
-
+  private readonly dialogService = inject(DialogService);
   allSchedules = signal<ExamSchedule[]>([]);
   isLoading = signal(true);
   searchTerm = signal('');
@@ -27,7 +27,7 @@ export class ExamSchedulerPage implements OnInit {
   isAddModalOpen = signal(false);
   selectedScheduleForStudents = signal<ExamSchedule | null>(null);
   selectedScheduleDetails = signal<ExamSchedule | null>(null); 
-
+deletingIds = signal<Set<number>>(new Set());
   filteredSchedules = computed(() => {
     let list = this.allSchedules();
     const search = this.searchTerm().toLowerCase().trim();
@@ -111,5 +111,51 @@ export class ExamSchedulerPage implements OnInit {
       })
     );
     this.selectedScheduleForStudents.set(null);
+  }
+
+  onDeleteSchedule(schedule: ExamSchedule) {
+    this.dialogService.confirm(
+      'Delete Schedule',
+      `Are you sure you want to delete Schedule ID ${schedule.id} in ${schedule.room}? This will remove all assigned students.`,
+      () => {
+
+        this.deletingIds.update(set => {
+          const newSet = new Set(set);
+          newSet.add(schedule.id);
+          return newSet;
+        });
+
+        this.schedulesService.deleteSchedule(schedule.id).subscribe({
+          next: () => {
+
+            this.allSchedules.update(list => list.filter(s => s.id !== schedule.id));
+            
+
+            this.deletingIds.update(set => {
+              const newSet = new Set(set);
+              newSet.delete(schedule.id);
+              return newSet;
+            });
+            
+            this.dialogService.success('Deleted', 'The schedule was successfully deleted.');
+          },
+          error: (err) => {
+            console.error(err);
+            
+ 
+            this.deletingIds.update(set => {
+              const newSet = new Set(set);
+              newSet.delete(schedule.id);
+              return newSet;
+            });
+            
+            this.dialogService.error('Delete Failed', 'Failed to delete the schedule. Please try again.');
+          }
+        });
+      },
+      undefined,
+      'Delete',
+      'Cancel'
+    );
   }
 }

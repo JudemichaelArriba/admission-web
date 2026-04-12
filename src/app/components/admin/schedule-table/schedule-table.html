@@ -15,8 +15,10 @@
     <tbody class="divide-y divide-slate-50">
       @for (schedule of schedules; track schedule.id) {
 
-      <tr app-schedule-row [schedule]="schedule" (manage)="manageStudents.emit($event)"
-        (viewDetails)="viewDetails.emit($event)" class="hover:bg-blue-50/30 transition-all group cursor-pointer">
+      <tr app-schedule-row [schedule]="schedule" [isDeleting]="deletingIds.has(schedule.id)"
+        (manage)="manageStudents.emit($event)" (viewDetails)="viewDetails.emit($event)"
+        (delete)="deleteSchedule.emit($event)" class="hover:bg-blue-50/30 transition-all group"
+        [class.cursor-pointer]="!deletingIds.has(schedule.id)">
       </tr>
 
       } @empty {

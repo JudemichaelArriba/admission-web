@@ -55,8 +55,10 @@
       } @else {
         <app-schedule-table 
           [schedules]="filteredSchedules()" 
+          [deletingIds]="deletingIds()"
           (manageStudents)="openManageStudentsModal($event)"
-          (viewDetails)="openScheduleDetails($event)">
+          (viewDetails)="openScheduleDetails($event)"
+          (deleteSchedule)="onDeleteSchedule($event)">
         </app-schedule-table>
       }
 

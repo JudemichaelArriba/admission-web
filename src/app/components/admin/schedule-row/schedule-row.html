@@ -1,11 +1,11 @@
-<td class="px-8 py-4">
+<td class="px-8 py-4" [class.opacity-50]="isDeleting">
     <div
         class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
         {{ schedule.id }}
     </div>
 </td>
 
-<td class="px-6 py-4">
+<td class="px-6 py-4" [class.opacity-50]="isDeleting">
     <div class="text-sm font-bold text-slate-800">
         {{ normalizedDate ? (normalizedDate | date:'MMM d, y') : '—' }}
     </div>
@@ -15,21 +15,21 @@
     </div>
 </td>
 
-<td class="px-6 py-4">
+<td class="px-6 py-4" [class.opacity-50]="isDeleting">
     <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-600">
         <span class="material-symbols-outlined text-[14px]">meeting_room</span>
         {{ schedule.room }}
     </div>
 </td>
 
-<td class="px-6 py-4 text-center">
+<td class="px-6 py-4 text-center" [class.opacity-50]="isDeleting">
     <div
         class="inline-flex items-center justify-center min-w-[2.5rem] px-2 h-8 bg-blue-50 text-blue-600 rounded-lg text-sm font-bold border border-blue-100">
         {{ schedule.exams?.length || 0 }}
     </div>
 </td>
 
-<td class="px-6 py-4 text-center">
+<td class="px-6 py-4 text-center" [class.opacity-50]="isDeleting">
     <span
         [class]="schedule.status === 'upcoming' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'"
         class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border">
@@ -39,20 +39,25 @@
 
 <td class="px-8 py-4 text-right">
     <div class="flex items-center justify-end gap-2">
-        <button (click)="manage.emit(schedule); $event.stopPropagation()"
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
-            title="Manage Students">
+        <button (click)="manage.emit(schedule); $event.stopPropagation()" [disabled]="isDeleting"
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            [class.hover:text-blue-600]="!isDeleting" [class.hover:border-blue-200]="!isDeleting"
+            [class.hover:bg-blue-50]="!isDeleting" title="Manage Students">
             <span class="material-symbols-outlined text-[18px]">group</span>
         </button>
-        <button
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-colors"
-            title="Edit Schedule">
-            <span class="material-symbols-outlined text-[18px]">edit</span>
-        </button>
-        <button
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-colors"
+
+        <button (click)="delete.emit(schedule); $event.stopPropagation()" [disabled]="isDeleting"
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 transition-colors disabled:cursor-not-allowed"
+            [class.text-slate-400]="!isDeleting" [class.hover:text-rose-600]="!isDeleting"
+            [class.hover:border-rose-200]="!isDeleting" [class.hover:bg-rose-50]="!isDeleting"
+            [class.text-rose-500]="isDeleting" [class.bg-rose-50]="isDeleting" [class.border-rose-100]="isDeleting"
             title="Delete Schedule">
+
+            @if (isDeleting) {
+            <div class="w-4 h-4 border-2 border-rose-500/30 border-t-rose-600 rounded-full animate-spin"></div>
+            } @else {
             <span class="material-symbols-outlined text-[18px]">delete</span>
+            }
         </button>
     </div>
 </td>

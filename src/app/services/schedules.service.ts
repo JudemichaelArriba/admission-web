@@ -25,4 +25,7 @@ export class SchedulesService {
   updateSchedule(id: number, data: Partial<ExamSchedule>): Observable<{message: string, data: ExamSchedule}> {
     return this.http.put<{message: string, data: ExamSchedule}>(`${this.API}/${id}`, data);
   }
+  deleteSchedule(id: number): Observable<{message: string}> {
+    return this.http.delete<{message: string}>(`${this.API}/${id}`);
+  }
 }

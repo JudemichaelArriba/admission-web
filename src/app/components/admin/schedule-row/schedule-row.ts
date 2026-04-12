@@ -11,16 +11,21 @@ import { ExamSchedule } from '../../../models/entrance-exam.model';
 })
 export class ScheduleRow {
   @Input({ required: true }) schedule!: ExamSchedule;
+  @Input() isDeleting = false;
+
+
   @Output() manage = new EventEmitter<ExamSchedule>();
-@Output() viewDetails = new EventEmitter<ExamSchedule>();
+  @Output() viewDetails = new EventEmitter<ExamSchedule>();
 
-
+  @Output() delete = new EventEmitter<ExamSchedule>();
 
   @HostListener('click')
   onRowClick() {
-    this.viewDetails.emit(this.schedule);
+    // Prevent opening details if the row is currently being deleted
+    if (!this.isDeleting) {
+      this.viewDetails.emit(this.schedule);
+    }
   }
-
   // Helper properties to safely convert Laravel's date strings into JS Dates
   get normalizedDate(): Date | null {
     if (!this.schedule.exam_date) return null;
