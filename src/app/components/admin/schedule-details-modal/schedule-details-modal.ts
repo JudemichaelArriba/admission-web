@@ -5,6 +5,8 @@ import { ExamSchedule, EntranceExam } from '../../../models/entrance-exam.model'
 import { SchedulesService } from '../../../services/schedules.service';
 import { DialogService } from '../../../services/dialog.service';
 import { DatePickerComponent } from '../../shared/date-picker/date-picker';
+import { DropdownComponent } from '../../shared/drop-down/drop-down';
+import { DropdownOption } from '../../../models/dropdown.model';
 interface TimeState {
   hour: string;
   minute: string;
@@ -14,7 +16,7 @@ interface TimeState {
 @Component({
   selector: 'app-schedule-details-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePickerComponent],
+  imports: [CommonModule, FormsModule, DatePickerComponent, DropdownComponent],
   templateUrl: './schedule-details-modal.html',
   styles: [`
     .hide-scroll::-webkit-scrollbar { display: none; }
@@ -23,7 +25,7 @@ interface TimeState {
 })
 export class ScheduleDetailsModal implements OnInit {
   @Input({ required: true }) schedule!: ExamSchedule;
-  
+
   @Output() close = new EventEmitter<void>();
   @Output() scheduleUpdated = new EventEmitter<ExamSchedule>();
   @Output() openAddStudent = new EventEmitter<ExamSchedule>();
@@ -34,13 +36,17 @@ export class ScheduleDetailsModal implements OnInit {
 
   isSaving = signal(false);
   isEditing = signal(false);
-  
+
   editData = signal<{
     room: string;
-    exam_date: string; 
+    exam_date: string;
     status: 'upcoming' | 'completed';
   }>({ room: '', exam_date: '', status: 'upcoming' });
 
+  statusOptions: DropdownOption[] = [
+    { label: 'Upcoming', value: 'upcoming', sublabel: 'Schedule is active and open' },
+    { label: 'Completed', value: 'completed', sublabel: 'Locks roster and allows grading' }
+  ];
 
   hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'));
   minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
@@ -59,13 +65,13 @@ export class ScheduleDetailsModal implements OnInit {
 
   private parseDateTime(datetime: string): { date: string, time: TimeState } {
     if (!datetime) return { date: '', time: { hour: '12', minute: '00', period: 'AM' } };
-    
+
     const [datePart, timePart] = datetime.split(' ');
     const [h, m] = timePart.split(':');
-    
+
     let hourNum = parseInt(h, 10);
     const period = hourNum >= 12 ? 'PM' : 'AM';
-    
+
     if (hourNum === 0) hourNum = 12;
     if (hourNum > 12) hourNum -= 12;
 
@@ -97,7 +103,7 @@ export class ScheduleDetailsModal implements OnInit {
   toggleEdit() {
     this.isEditing.set(!this.isEditing());
     if (!this.isEditing()) {
-      this.syncData(); 
+      this.syncData();
     }
   }
 
@@ -135,9 +141,11 @@ export class ScheduleDetailsModal implements OnInit {
     return `${h.toString().padStart(2, '0')}:${t.minute}`;
   }
 
+  onStatusChange(newStatus: 'upcoming' | 'completed') {
+    this.editData.set({ ...this.editData(), status: newStatus });
+  }
 
-
- saveDetails() {
+  saveDetails() {
     const start24 = this.get24Hour(this.startTime);
     const end24 = this.get24Hour(this.endTime);
 
@@ -162,7 +170,7 @@ export class ScheduleDetailsModal implements OnInit {
 
     this.dialogService.confirm('Update Schedule', 'Are you sure you want to save these changes?', () => {
       this.isSaving.set(true);
-      
+
       const payload = {
         room: this.editData().room,
         status: this.editData().status,
@@ -173,16 +181,16 @@ export class ScheduleDetailsModal implements OnInit {
       this.schedulesService.updateSchedule(this.schedule.id, payload).subscribe({
         next: (res) => {
           this.isSaving.set(false);
-          this.isEditing.set(false); 
-        
-          const updated = { 
-            ...this.schedule, 
-            ...res.data, 
-            exams: res.data.exams || this.schedule.exams 
+          this.isEditing.set(false);
+
+          const updated = {
+            ...this.schedule,
+            ...res.data,
+            exams: res.data.exams || this.schedule.exams
           };
-          
-          this.schedule = updated; 
-          this.scheduleUpdated.emit(updated); 
+
+          this.schedule = updated;
+          this.scheduleUpdated.emit(updated);
           this.dialogService.success('Success', 'Schedule updated successfully.');
         },
         error: (err) => {
@@ -203,9 +211,9 @@ export class ScheduleDetailsModal implements OnInit {
           next: () => {
             const updatedExams = this.schedule.exams?.filter(e => e.id !== exam.id) || [];
             const updatedSchedule = { ...this.schedule, exams: updatedExams };
-            
-            this.schedule = updatedSchedule; 
-            this.scheduleUpdated.emit(updatedSchedule); 
+
+            this.schedule = updatedSchedule;
+            this.scheduleUpdated.emit(updatedSchedule);
             this.dialogService.success('Removed', 'Student removed from schedule.');
           },
           error: (err) => {

@@ -19,4 +19,8 @@ export class ExamsService {
   evaluateExam(examId: number, exam_score: number): Observable<any> {
     return this.http.put(`${this.API}/${examId}/evaluate`, { exam_score });
   }
+
+  getEvaluationQueue(): Observable<EntranceExam[]> {
+    return this.http.get<EntranceExam[]>(`${this.API}/evaluation-queue`);
+  }
 }

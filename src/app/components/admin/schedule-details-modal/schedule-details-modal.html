@@ -140,13 +140,21 @@
               </div>
             </div>
 
-            <div>
-              <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Status</label>
-              <select [(ngModel)]="editData().status" [disabled]="!isEditing()"
-                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all disabled:bg-transparent disabled:border-transparent disabled:text-slate-600 disabled:shadow-none disabled:appearance-none disabled:px-0">
-                <option value="upcoming">Upcoming</option>
-                <option value="completed">Completed</option>
-              </select>
+            <div class="pt-1">
+              @if (!isEditing()) {
+              <div class="space-y-1.5">
+                <label
+                  class="block text-[9px] font-semibold uppercase tracking-[0.18em] pl-1 mb-1 font-mono text-slate-500">Status</label>
+                <div
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-bold text-slate-500 shadow-none">
+                  {{ editData().status === 'completed' ? 'Completed' : 'Upcoming' }}
+                </div>
+              </div>
+              } @else {
+              <app-dropdown label="Status" theme="light" [options]="statusOptions" [selectedValue]="editData().status"
+                [isLoading]="false" (selectionChange)="onStatusChange($event)">
+              </app-dropdown>
+              }
             </div>
 
             @if (isEditing()) {

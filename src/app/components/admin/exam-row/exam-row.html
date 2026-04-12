@@ -1,0 +1,56 @@
+<td class="px-8 py-4">
+  <div class="text-sm font-black text-slate-700">
+    {{ exam.id }}
+  </div>
+</td>
+
+<td class="px-6 py-4">
+  <div class="text-sm font-bold text-slate-800">
+    {{ exam.applicant?.first_name }} {{ exam.applicant?.last_name }}
+  </div>
+  <div class="text-[11px] font-medium text-slate-500 mt-0.5">
+    {{ exam.applicant?.email }}
+  </div>
+  <div class="inline-flex items-center mt-1.5 px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold text-slate-600">
+    {{ exam.applicant?.course?.course_name }}
+  </div>
+</td>
+
+<td class="px-6 py-4">
+  <div class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+    <span class="material-symbols-outlined text-[14px] text-slate-400">event</span>
+    {{ exam.schedule.exam_date | date:'MMM d, y' }}
+  </div>
+  <div class="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1.5">
+    <span class="material-symbols-outlined text-[14px] text-slate-400">meeting_room</span>
+    {{ exam.schedule.room }}
+  </div>
+</td>
+
+<td class="px-6 py-4 text-center">
+  @if (exam.exam_score === null) {
+    <span class="inline-flex items-center px-3 py-1 bg-amber-50 text-amber-600 border border-amber-200 rounded-full text-[10px] font-black uppercase tracking-wider">
+      Completed
+    </span>
+  } @else {
+    <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-full text-[10px] font-black uppercase tracking-wider">
+      Evaluated
+    </span>
+  }
+</td>
+
+<td class="px-8 py-4 text-right">
+  <div class="flex items-center justify-end">
+    @if (exam.exam_score === null) {
+      <button (click)="actionClick.emit(exam)" class="group flex items-center gap-1.5 text-blue-600 hover:text-blue-700 transition-colors">
+        <span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">edit_document</span>
+        <span class="text-[11px] font-black uppercase tracking-wider">Evaluate</span>
+      </button>
+    } @else {
+      <button (click)="actionClick.emit(exam)" class="group flex items-center gap-1.5 text-slate-400 hover:text-blue-600 transition-colors">
+        <span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">edit</span>
+        <span class="text-[11px] font-black uppercase tracking-wider">Edit</span>
+      </button>
+    }
+  </div>
+</td>
