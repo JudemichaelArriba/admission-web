@@ -1,28 +1,36 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs';
 import { ExamsService } from '../../../services/exams.service';
-import { AuthService } from '../../../services/auth.service'; // Added AuthService import
+import { AuthService } from '../../../services/auth.service';
 import { EntranceExam } from '../../../models/entrance-exam.model';
 import { ExamRow } from '../../../models/exam-row.model';
 import { ExamRowComponent } from '../exam-row/exam-row';
+import { ExamResultModal } from '../exam-result-modal/exam-result-modal';
 
 @Component({
   selector: 'app-exam-sched-table',
   standalone: true,
-  imports: [CommonModule, ExamRowComponent],
+  imports: [CommonModule, ExamRowComponent, ExamResultModal],
   templateUrl: './exam-sched-table.html',
-  styleUrl: './exam-sched-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExamSchedTable implements OnInit {
   private readonly examsService = inject(ExamsService);
-  private readonly authService = inject(AuthService); // Inject AuthService
+  private readonly authService = inject(AuthService);
   private readonly cdr = inject(ChangeDetectorRef);
 
   exams: ExamRow[] = [];
   isLoading = true;
   errorMessage = '';
+
+  // State for the modal
+  selectedExamResult = signal<ExamRow | null>(null);
+
+  // Computed property to determine if the tip should show
+  get hasEvaluatedExams(): boolean {
+    return this.exams.some(e => e.status === 'evaluated');
+  }
 
   ngOnInit(): void {
     this.loadExams();
@@ -32,7 +40,6 @@ export class ExamSchedTable implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
 
-    // 1. Get the applicant ID from local storage via AuthService
     const applicantId = this.authService.getApplicantId();
 
     if (!applicantId) {
@@ -42,7 +49,6 @@ export class ExamSchedTable implements OnInit {
       return;
     }
 
-    // 2. Pass the ID to the service so Laravel knows who is requesting
     this.examsService.getExams(applicantId)
       .pipe(finalize(() => {
         this.isLoading = false;
@@ -71,6 +77,7 @@ export class ExamSchedTable implements OnInit {
       examEndTime: this.toDate(exam.schedule?.exam_end_time),
       room: exam.schedule?.room ?? '',
       status: exam.status,
+      examScore: exam.exam_score // Map the score
     };
   }
 
@@ -80,5 +87,9 @@ export class ExamSchedTable implements OnInit {
 
     const date = new Date(normalized);
     return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  openResult(exam: ExamRow) {
+    this.selectedExamResult.set(exam);
   }
 }
