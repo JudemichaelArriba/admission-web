@@ -32,6 +32,9 @@ export class ApplicantApplicationsPage implements OnInit {
   selectedApplicant = signal<Applicant | null>(null);
   isModalOpen = signal<boolean>(false);
 
+  currentPage = signal(1);
+  pageSize = signal(4); 
+
   filteredApplicants = computed(() => {
     let list = this.allApplicants();
     const search = this.searchTerm().toLowerCase().trim();
@@ -52,6 +55,18 @@ export class ApplicantApplicationsPage implements OnInit {
     return list;
   });
 
+  totalPages = computed(() => {
+    const total = this.filteredApplicants().length;
+    return Math.ceil(total / this.pageSize()) || 1; 
+  });
+
+ 
+  paginatedApplicants = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredApplicants().slice(start, end);
+  });
+
   ngOnInit() {
     this.loadApplicants();
   }
@@ -67,9 +82,31 @@ export class ApplicantApplicationsPage implements OnInit {
     });
   }
 
+
+
+  updateSearch(term: string) {
+    this.searchTerm.set(term);
+    this.currentPage.set(1);
+  }
+
   setFilter(filter: 'all' | 'pending' | 'approved' | 'rejected') {
     this.activeFilter.set(filter);
+    this.currentPage.set(1);
   }
+
+  nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+
 
   openApplicantDetails(applicant: Applicant) {
     this.selectedApplicant.set(applicant);

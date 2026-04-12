@@ -5,6 +5,7 @@ import { ExamsService } from '../../../services/exams.service';
 import { EntranceExam } from '../../../models/entrance-exam.model';
 import { ExamTable } from '../../../components/admin/exam-table/exam-table';
 import { ExamEvaluateModal } from '../../../components/admin/exam-evaluate-modal/exam-evaluate-modal';
+
 @Component({
   selector: 'app-exam-evaluation-page',
   standalone: true,
@@ -20,6 +21,10 @@ export class ExamEvaluationPage implements OnInit {
 
   searchTerm = signal('');
   activeFilter = signal<'all' | 'ungraded' | 'graded'>('all');
+
+
+  currentPage = signal(1);
+  pageSize = signal(4); 
 
   pendingCount = computed(() => this.allExams().filter(e => e.exam_score === null).length);
   evaluatedCount = computed(() => this.allExams().filter(e => e.exam_score !== null).length);
@@ -44,11 +49,25 @@ export class ExamEvaluationPage implements OnInit {
       );
     }
 
+  
     return list.sort((a, b) => {
       const aVal = a.exam_score === null ? 0 : 1;
       const bVal = b.exam_score === null ? 0 : 1;
       return aVal - bVal;
     });
+  });
+
+
+  totalPages = computed(() => {
+    const total = this.filteredExams().length;
+    return Math.ceil(total / this.pageSize()) || 1; 
+  });
+
+
+  paginatedExams = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredExams().slice(start, end);
   });
 
   ngOnInit() {
@@ -69,10 +88,28 @@ export class ExamEvaluationPage implements OnInit {
     });
   }
 
-  setFilter(filter: 'all' | 'ungraded' | 'graded') {
-    this.activeFilter.set(filter);
+
+  updateSearch(term: string) {
+    this.searchTerm.set(term);
+    this.currentPage.set(1); 
   }
 
+  setFilter(filter: 'all' | 'ungraded' | 'graded') {
+    this.activeFilter.set(filter);
+    this.currentPage.set(1); 
+  }
+
+  nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
 
   handleAction(exam: EntranceExam) {
     this.selectedExamForEvaluation.set(exam);

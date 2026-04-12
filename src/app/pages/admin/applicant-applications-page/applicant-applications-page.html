@@ -24,7 +24,7 @@
         <input
           type="text"
           [ngModel]="searchTerm()"
-          (ngModelChange)="searchTerm.set($event)"
+          (ngModelChange)="updateSearch($event)"
           placeholder="Search applicants by name or ID..."
           class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 font-medium" />
       </div>
@@ -60,7 +60,7 @@
         </div>
       } @else {
         <app-applicants-table
-          [data]="filteredApplicants()"
+          [data]="paginatedApplicants()"
           [processingId]="processingId()"
           [processingAction]="processingAction()"
           (approveClicked)="onApprove($event)"
@@ -73,10 +73,25 @@
         <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
           Matches <span class="text-slate-900 mx-1">{{ filteredApplicants().length }}</span>
         </p>
-        <div class="flex gap-2">
-          <button class="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 border border-slate-200 bg-white">Previous</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-100">1</button>
-          <button class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 border border-slate-200 bg-white hover:bg-slate-50">Next</button>
+        
+        <div class="flex gap-2 items-center">
+          <button 
+            (click)="prevPage()" 
+            [disabled]="currentPage() === 1 || isLoading()"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+            Previous
+          </button>
+          
+          <div class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-100 min-w-[3rem] text-center">
+            {{ currentPage() }} / {{ totalPages() }}
+          </div>
+          
+          <button 
+            (click)="nextPage()" 
+            [disabled]="currentPage() === totalPages() || isLoading()"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+            Next
+          </button>
         </div>
       </div>
     </div>

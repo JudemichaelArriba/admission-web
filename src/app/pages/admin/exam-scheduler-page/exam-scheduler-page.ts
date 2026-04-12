@@ -9,6 +9,7 @@ import { ScheduleAddStudentModal } from '../../../components/admin/schedule-add-
 import { ScheduleDetailsModal } from '../../../components/admin/schedule-details-modal/schedule-details-modal'; 
 import { EntranceExam } from '../../../models/entrance-exam.model';
 import { DialogService } from '../../../services/dialog.service';
+
 @Component({
   selector: 'app-exam-scheduler-page',
   standalone: true,
@@ -18,16 +19,21 @@ import { DialogService } from '../../../services/dialog.service';
 export class ExamSchedulerPage implements OnInit {
   private readonly schedulesService = inject(SchedulesService);
   private readonly dialogService = inject(DialogService);
+  
   allSchedules = signal<ExamSchedule[]>([]);
   isLoading = signal(true);
   searchTerm = signal('');
   activeFilter = signal<'all' | 'upcoming' | 'completed'>('all');
   
-
   isAddModalOpen = signal(false);
   selectedScheduleForStudents = signal<ExamSchedule | null>(null);
   selectedScheduleDetails = signal<ExamSchedule | null>(null); 
-deletingIds = signal<Set<number>>(new Set());
+  deletingIds = signal<Set<number>>(new Set());
+
+
+  currentPage = signal(1);
+  pageSize = signal(4); 
+
   filteredSchedules = computed(() => {
     let list = this.allSchedules();
     const search = this.searchTerm().toLowerCase().trim();
@@ -45,6 +51,19 @@ deletingIds = signal<Set<number>>(new Set());
     }
 
     return list;
+  });
+
+
+  totalPages = computed(() => {
+    const total = this.filteredSchedules().length;
+    return Math.ceil(total / this.pageSize()) || 1; 
+  });
+
+
+  paginatedSchedules = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize();
+    const end = start + this.pageSize();
+    return this.filteredSchedules().slice(start, end);
   });
 
   ngOnInit() {
@@ -65,15 +84,36 @@ deletingIds = signal<Set<number>>(new Set());
     });
   }
 
+ 
+
+  updateSearch(term: string) {
+    this.searchTerm.set(term);
+    this.currentPage.set(1); 
+  }
+
   setFilter(filter: 'all' | 'upcoming' | 'completed') {
     this.activeFilter.set(filter);
+    this.currentPage.set(1); 
   }
+
+  nextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+ 
 
   handleScheduleAdded(newSchedule: ExamSchedule) {
     this.allSchedules.update(list => [newSchedule, ...list]);
     this.isAddModalOpen.set(false);
   }
-
 
   openManageStudentsModal(schedule: ExamSchedule) {
     this.selectedScheduleForStudents.set(schedule);
@@ -83,13 +123,11 @@ deletingIds = signal<Set<number>>(new Set());
     this.selectedScheduleDetails.set(schedule);
   }
 
-  
   handleScheduleUpdated(updatedSchedule: ExamSchedule) {
     this.allSchedules.update(schedules => 
       schedules.map(schedule => schedule.id === updatedSchedule.id ? updatedSchedule : schedule)
     );
   }
-
 
   handleStudentsAdded(scheduleId: number, newExams: EntranceExam[]) {
     this.allSchedules.update(schedules => 
@@ -100,7 +138,6 @@ deletingIds = signal<Set<number>>(new Set());
             exams: [...(schedule.exams || []), ...newExams]
           };
           
-         
           if (this.selectedScheduleDetails()?.id === scheduleId) {
             this.selectedScheduleDetails.set(updatedSchedule);
           }
@@ -118,7 +155,6 @@ deletingIds = signal<Set<number>>(new Set());
       'Delete Schedule',
       `Are you sure you want to delete Schedule ID ${schedule.id} in ${schedule.room}? This will remove all assigned students.`,
       () => {
-
         this.deletingIds.update(set => {
           const newSet = new Set(set);
           newSet.add(schedule.id);
@@ -127,10 +163,8 @@ deletingIds = signal<Set<number>>(new Set());
 
         this.schedulesService.deleteSchedule(schedule.id).subscribe({
           next: () => {
-
             this.allSchedules.update(list => list.filter(s => s.id !== schedule.id));
             
-
             this.deletingIds.update(set => {
               const newSet = new Set(set);
               newSet.delete(schedule.id);
@@ -141,14 +175,11 @@ deletingIds = signal<Set<number>>(new Set());
           },
           error: (err) => {
             console.error(err);
-            
- 
             this.deletingIds.update(set => {
               const newSet = new Set(set);
               newSet.delete(schedule.id);
               return newSet;
             });
-            
             this.dialogService.error('Delete Failed', 'Failed to delete the schedule. Please try again.');
           }
         });
