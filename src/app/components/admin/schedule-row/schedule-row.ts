@@ -21,12 +21,13 @@ export class ScheduleRow {
 
   @HostListener('click')
   onRowClick() {
-    // Prevent opening details if the row is currently being deleted
+    
     if (!this.isDeleting) {
       this.viewDetails.emit(this.schedule);
     }
   }
-  // Helper properties to safely convert Laravel's date strings into JS Dates
+
+  
   get normalizedDate(): Date | null {
     if (!this.schedule.exam_date) return null;
     return new Date(this.schedule.exam_date.replace(' ', 'T'));
@@ -35,5 +36,9 @@ export class ScheduleRow {
   get normalizedEndTime(): Date | null {
     if (!this.schedule.exam_end_time) return null;
     return new Date(this.schedule.exam_end_time.replace(' ', 'T'));
+  }
+
+  get canManageStudents(): boolean {
+    return !this.isDeleting && this.schedule.status !== 'completed';
   }
 }

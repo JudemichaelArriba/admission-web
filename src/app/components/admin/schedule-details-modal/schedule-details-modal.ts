@@ -137,7 +137,7 @@ export class ScheduleDetailsModal implements OnInit {
 
 
 
-  saveDetails() {
+ saveDetails() {
     const start24 = this.get24Hour(this.startTime);
     const end24 = this.get24Hour(this.endTime);
 
@@ -174,8 +174,13 @@ export class ScheduleDetailsModal implements OnInit {
         next: (res) => {
           this.isSaving.set(false);
           this.isEditing.set(false); 
+        
+          const updated = { 
+            ...this.schedule, 
+            ...res.data, 
+            exams: res.data.exams || this.schedule.exams 
+          };
           
-          const updated = { ...this.schedule, ...res.data, exams: this.schedule.exams };
           this.schedule = updated; 
           this.scheduleUpdated.emit(updated); 
           this.dialogService.success('Success', 'Schedule updated successfully.');

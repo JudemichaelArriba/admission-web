@@ -165,11 +165,15 @@
             <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
               Assigned Students
               <span
-                class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-black">{{
-                schedule.exams?.length || 0 }}</span>
+                class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 text-slate-500 text-[10px] font-black">
+                {{ schedule.exams?.length || 0 }}
+              </span>
             </h3>
-            <button (click)="openAddStudent.emit(schedule)"
-              class="flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-700 uppercase tracking-wider bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+
+            <button (click)="openAddStudent.emit(schedule)" [disabled]="schedule.status === 'completed'"
+              [title]="schedule.status === 'completed' ? 'Cannot add students to a completed schedule' : 'Add Student'"
+              class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              [class]="schedule.status === 'completed' ? 'bg-slate-100 text-slate-400 border border-slate-200' : 'text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700'">
               <span class="material-symbols-outlined text-[14px]">person_add</span> Add
             </button>
           </div>
@@ -186,17 +190,23 @@
             <table class="w-full text-left border-collapse">
               <tbody>
                 @for (exam of schedule.exams; track exam.id) {
-                <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/70 transition-colors group">
+                <tr class="border-b border-slate-50 last:border-0 transition-colors group"
+                  [class.hover:bg-slate-50]="schedule.status !== 'completed'">
                   <td class="px-5 py-3.5">
-                    <div class="text-sm font-bold text-slate-800 leading-tight">{{ exam.applicant?.first_name }} {{
-                      exam.applicant?.last_name }}</div>
+                    <div class="text-sm font-bold text-slate-800 leading-tight">
+                      {{ exam.applicant?.first_name }} {{ exam.applicant?.last_name }}
+                    </div>
                     <div class="text-[11px] text-slate-400 font-medium mt-0.5">ID: {{ exam.applicant_id }}</div>
                   </td>
                   <td class="px-5 py-3.5 text-right">
-                    <button (click)="removeStudent(exam)"
-                      class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-300 hover:bg-rose-50 hover:text-rose-500 hover:border hover:border-rose-100 transition-all duration-150 opacity-0 group-hover:opacity-100">
+
+                    <button (click)="removeStudent(exam)" [disabled]="schedule.status === 'completed'"
+                      [title]="schedule.status === 'completed' ? 'Cannot remove from a completed schedule' : 'Remove Student'"
+                      class="w-8 h-8 inline-flex items-center justify-center rounded-lg transition-all duration-150 disabled:cursor-not-allowed"
+                      [class]="schedule.status === 'completed' ? 'text-slate-200 opacity-40' : 'text-slate-300 hover:bg-rose-50 hover:text-rose-500 hover:border hover:border-rose-100 opacity-0 group-hover:opacity-100'">
                       <span class="material-symbols-outlined text-[18px]">person_remove</span>
                     </button>
+
                   </td>
                 </tr>
                 }
