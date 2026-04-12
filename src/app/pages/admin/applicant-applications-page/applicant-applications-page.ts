@@ -33,10 +33,10 @@ export class ApplicantApplicationsPage implements OnInit {
   isModalOpen = signal<boolean>(false);
 
   currentPage = signal(1);
-  pageSize = signal(4); 
+  pageSize = signal(4);
 
   filteredApplicants = computed(() => {
-    let list = this.allApplicants();
+    let list = [...this.allApplicants()];
     const search = this.searchTerm().toLowerCase().trim();
     const filter = this.activeFilter().toLowerCase();
 
@@ -52,15 +52,23 @@ export class ApplicantApplicationsPage implements OnInit {
       );
     }
 
-    return list;
+    return list.sort((a, b) => {
+      const aIsPending = (!a.status || a.status.toLowerCase() === 'pending') ? 0 : 1;
+      const bIsPending = (!b.status || b.status.toLowerCase() === 'pending') ? 0 : 1;
+      
+      if (aIsPending !== bIsPending) {
+        return aIsPending - bIsPending;
+      }
+      
+      return b.id - a.id;
+    });
   });
 
   totalPages = computed(() => {
     const total = this.filteredApplicants().length;
-    return Math.ceil(total / this.pageSize()) || 1; 
+    return Math.ceil(total / this.pageSize()) || 1;
   });
 
- 
   paginatedApplicants = computed(() => {
     const start = (this.currentPage() - 1) * this.pageSize();
     const end = start + this.pageSize();
@@ -81,8 +89,6 @@ export class ApplicantApplicationsPage implements OnInit {
       error: () => this.isLoading.set(false)
     });
   }
-
-
 
   updateSearch(term: string) {
     this.searchTerm.set(term);
@@ -106,8 +112,6 @@ export class ApplicantApplicationsPage implements OnInit {
     }
   }
 
-
-
   openApplicantDetails(applicant: Applicant) {
     this.selectedApplicant.set(applicant);
     this.isModalOpen.set(true);
@@ -128,7 +132,7 @@ export class ApplicantApplicationsPage implements OnInit {
 
     forkJoin({
       docs: this.documentService.list(applicant.id),
-      exams: this.examsService.getExams(applicant.id) 
+      exams: this.examsService.getExams(applicant.id)
     }).subscribe({
       next: ({ docs, exams }) => {
         this.clearProcessing();
