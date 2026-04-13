@@ -87,14 +87,7 @@
   </nav>
 
   <div class="border-t border-slate-100 p-3 shrink-0 overflow-hidden">
-    <a routerLink="/admin/settings"
-      class="flex items-center gap-3 px-3 py-2.5 mb-2 text-slate-600 hover:text-blue-700 rounded-lg transition-all group"
-      [class.justify-center]="!isOpen()">
-      <span class="material-symbols-outlined text-[18px] group-hover:rotate-45 transition-transform">settings</span>
-      @if (isOpen()) {
-      <span class="text-[11px] font-black uppercase tracking-widest">Settings</span>
-      }
-    </a>
+
 
     <div (click)="onLogoutClick()" class="relative flex items-center gap-3 p-3 rounded-xl bg-gradient-to-br from-slate-50/50 to-white
              border border-slate-100/80 hover:shadow-md hover:shadow-blue-100/50

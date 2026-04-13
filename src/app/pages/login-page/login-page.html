@@ -32,8 +32,10 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <a href="#" class="text-[10px] text-blue-400 hover:text-blue-300 transition-colors">Forgot
-                        password?</a>
+                    <a routerLink="/forgot-password"
+                        class="text-[10px] text-blue-400 hover:text-blue-300 cursor-pointer transition-colors">
+                        Forgot password?
+                    </a>
                 </div>
 
                 <button type="submit" [disabled]="isLoading || loginForm.invalid"

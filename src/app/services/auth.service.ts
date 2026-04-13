@@ -64,4 +64,11 @@ signup(formData: FormData): Observable<AuthResponse> {
       localStorage.removeItem(k)
     );
   }
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API}/auth/forgot-password`, { email });
+  }
+
+  resetPassword(payload: any): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API}/auth/reset-password`, payload);
+  }
 }

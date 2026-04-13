@@ -4,7 +4,6 @@ export interface Course {
     course_name: string;
     department: string;
     status: 'active' | 'inactive'; 
-    description?: string;
     created_at?: string;
     updated_at?: string;
 }
