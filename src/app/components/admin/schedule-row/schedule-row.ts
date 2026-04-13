@@ -13,21 +13,17 @@ export class ScheduleRow {
   @Input({ required: true }) schedule!: ExamSchedule;
   @Input() isDeleting = false;
 
-
   @Output() manage = new EventEmitter<ExamSchedule>();
   @Output() viewDetails = new EventEmitter<ExamSchedule>();
-
   @Output() delete = new EventEmitter<ExamSchedule>();
 
   @HostListener('click')
   onRowClick() {
-    
     if (!this.isDeleting) {
       this.viewDetails.emit(this.schedule);
     }
   }
 
-  
   get normalizedDate(): Date | null {
     if (!this.schedule.exam_date) return null;
     return new Date(this.schedule.exam_date.replace(' ', 'T'));
@@ -39,6 +35,11 @@ export class ScheduleRow {
   }
 
   get canManageStudents(): boolean {
+    return !this.isDeleting && this.schedule.status !== 'completed';
+  }
+
+
+  get canDelete(): boolean {
     return !this.isDeleting && this.schedule.status !== 'completed';
   }
 }

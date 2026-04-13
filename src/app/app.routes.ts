@@ -14,10 +14,12 @@ import { ApplicantApplicationsPage } from './pages/admin/applicant-applications-
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout';
 import { ExamSchedulerPage } from './pages/admin/exam-scheduler-page/exam-scheduler-page';
 import { ExamEvaluationPage } from './pages/admin/exam-evaluation-page/exam-evaluation-page';
+import { ForgetPasswordPage } from './pages/forget-password-page/forget-password-page';
 
 export const routes: Routes = [
     { path: 'login', component: LoginPage },
     { path: 'register', component: RegisterPage },
+    {path: 'forgot-password', component: ForgetPasswordPage},
     {
         path: '',
         component: PublicLayout,

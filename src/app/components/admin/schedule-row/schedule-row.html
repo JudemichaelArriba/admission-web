@@ -36,7 +36,6 @@
     </span>
 </td>
 
-
 <td class="px-8 py-4 text-right">
     <div class="flex items-center justify-end gap-2">
         
@@ -51,12 +50,17 @@
             <span class="material-symbols-outlined text-[18px]">group</span>
         </button>
 
-        <button (click)="delete.emit(schedule); $event.stopPropagation()" [disabled]="isDeleting"
-            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 transition-colors disabled:cursor-not-allowed"
-            [class.text-slate-400]="!isDeleting" [class.hover:text-rose-600]="!isDeleting"
-            [class.hover:border-rose-200]="!isDeleting" [class.hover:bg-rose-50]="!isDeleting"
-            [class.text-rose-500]="isDeleting" [class.bg-rose-50]="isDeleting" [class.border-rose-100]="isDeleting"
-            title="Delete Schedule">
+        <button (click)="delete.emit(schedule); $event.stopPropagation()" 
+            [disabled]="!canDelete"
+            class="w-8 h-8 flex items-center justify-center rounded-lg bg-white border border-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-slate-50"
+            [class.text-slate-400]="!isDeleting" 
+            [class.hover:text-rose-600]="canDelete"
+            [class.hover:border-rose-200]="canDelete" 
+            [class.hover:bg-rose-50]="canDelete"
+            [class.text-rose-500]="isDeleting" 
+            [class.bg-rose-50]="isDeleting" 
+            [class.border-rose-100]="isDeleting"
+            [title]="schedule.status === 'completed' ? 'Cannot delete a completed schedule' : 'Delete Schedule'">
             @if (isDeleting) {
                 <div class="w-4 h-4 border-2 border-rose-500/30 border-t-rose-600 rounded-full animate-spin"></div>
             } @else {
