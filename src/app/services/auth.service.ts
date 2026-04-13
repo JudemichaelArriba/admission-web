@@ -15,12 +15,13 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  signup(payload: SignupPayload): Observable<AuthResponse> {
+signup(formData: FormData): Observable<AuthResponse> {
     return this.http
-      .post<AuthResponse>(`${this.API}/auth/applicant/signup`, payload)
+      .post<AuthResponse>(`${this.API}/auth/applicant/signup`, formData)
       .pipe(tap(res => this.persist(res)));
   }
 
+  
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.API}/auth/login`, { email, password })

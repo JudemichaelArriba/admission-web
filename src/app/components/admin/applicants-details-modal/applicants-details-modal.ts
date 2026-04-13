@@ -10,6 +10,7 @@ import { ApplicantDocument } from '../../../models/applicant-document.model';
 import { DropdownComponent } from '../../shared/drop-down/drop-down';
 import { DropdownOption } from '../../../models/dropdown.model';
 import { DatePickerComponent } from '../../shared/date-picker/date-picker';
+
 @Component({
   selector: 'app-applicants-details-modal',
   standalone: true,
@@ -31,10 +32,21 @@ export class ApplicantsDetailsModal implements OnInit {
   isLoadingDocs = signal<boolean>(true);
   errorMessage = signal<string>('');
 
-  // Edit State & Animation
   isClosing = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   isSaving = signal<boolean>(false);
+
+  uploadType = signal<string>('');
+  uploadFile = signal<File | null>(null);
+  isUploading = signal<boolean>(false);
+  
+  docTypeOptions = signal<DropdownOption[]>([
+    { label: 'Form 138 (Report Card)', value: 'form_138' },
+    { label: 'Good Moral Certificate', value: 'good_moral' },
+    { label: 'PSA Birth Certificate', value: 'psa_birth_certificate' },
+    { label: '2x2 ID Picture', value: '2x2_picture' },
+    { label: 'Other', value: 'other' }
+  ]);
 
   courseOptions = signal<DropdownOption[]>([]);
   editForm: Partial<Applicant> = {};
@@ -135,6 +147,38 @@ export class ApplicantsDetailsModal implements OnInit {
       'Save Changes',
       'Cancel'
     );
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.uploadFile.set(file);
+    }
+  }
+
+  uploadDocument() {
+    const file = this.uploadFile();
+    const type = this.uploadType();
+
+    if (!file || !type) {
+      this.dialogService.error('Missing Information', 'Please select both a document type and a file to upload.');
+      return;
+    }
+
+    this.isUploading.set(true);
+    this.documentService.upload(this.applicant.id, file, type).subscribe({
+      next: (newDoc) => {
+        this.documents.update(docs => [...docs, newDoc]);
+        this.isUploading.set(false);
+        this.uploadFile.set(null);
+        this.uploadType.set('');
+        this.dialogService.success('Upload Successful', 'Document has been added.');
+      },
+      error: (err) => {
+        this.isUploading.set(false);
+        this.dialogService.error('Upload Failed', err?.error?.message || 'Failed to upload document.');
+      }
+    });
   }
 
   triggerClose() {
