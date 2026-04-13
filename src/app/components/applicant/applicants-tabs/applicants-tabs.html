@@ -1,13 +1,13 @@
-<div class="relative z-20 max-w-7xl mx-auto px-8 -mt-10">
+<div class="relative z-20 max-w-7xl mx-auto px-4 md:px-8 -mt-10">
     <div
-        class="bg-white border border-slate-200 shadow-[0_8px_40px_-12px_rgba(30,58,138,0.15)] rounded-[2rem] p-2 flex items-center justify-between">
+        class="bg-white border border-slate-200 shadow-[0_8px_40px_-12px_rgba(30,58,138,0.15)] rounded-2xl md:rounded-[2rem] p-4 md:p-2 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
 
-        <div class="flex items-center space-x-1">
+        <div class="flex flex-wrap justify-center items-center gap-2 w-full md:w-auto md:gap-0 md:space-x-1">
 
             <button routerLink="status" routerLinkActive="bg-blue-600 text-white shadow-md"
                 #rlaStatus="routerLinkActive"
                 [class]="!rlaStatus.isActive ? 'text-slate-500 hover:bg-slate-50 hover:text-blue-600' : ''"
-                class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300">
+                class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300 grow md:grow-0 w-[45%] md:w-auto">
                 <span class="material-symbols-outlined text-[18px]">task_alt</span>
                 Registration
             </button>
@@ -15,7 +15,7 @@
             <button routerLink="schedule" routerLinkActive="bg-blue-600 text-white shadow-md"
                 #rlaSched="routerLinkActive"
                 [class]="!rlaSched.isActive ? 'text-slate-500 hover:bg-slate-50 hover:text-blue-600' : ''"
-                class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300">
+                class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300 grow md:grow-0 w-[45%] md:w-auto">
                 <span class="material-symbols-outlined text-[18px]">calendar_month</span>
                 Schedule
             </button>
@@ -23,24 +23,25 @@
             <button routerLink="documents" routerLinkActive="bg-blue-600 text-white shadow-md"
                 #rlaDocs="routerLinkActive"
                 [class]="!rlaDocs.isActive ? 'text-slate-500 hover:bg-slate-50 hover:text-blue-600' : ''"
-                class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300">
+                class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300 grow md:grow-0 w-[45%] md:w-auto">
                 <span class="material-symbols-outlined text-[18px]">folder_open</span>
                 Documents
             </button>
 
             <button routerLink="profile" routerLinkActive="bg-blue-600 text-white shadow-md" #rlaInfo="routerLinkActive"
                 [class]="!rlaInfo.isActive ? 'text-slate-500 hover:bg-slate-50 hover:text-blue-600' : ''"
-                class="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300">
+                class="flex items-center justify-center gap-2 px-4 md:px-5 py-2 md:py-2.5 text-sm font-bold rounded-[1.25rem] transition-all duration-300 grow md:grow-0 w-[45%] md:w-auto">
                 <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
                 My Info
             </button>
 
         </div>
 
-        <div class="flex items-center gap-3 pr-2">
-            <div class="w-px h-6 bg-slate-200"></div>
+        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto md:pr-2">
+            <div class="w-full h-px md:w-px md:h-6 bg-slate-200"></div> 
+            
             <button (click)="logout()"
-                class="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-[1.25rem] transition-all duration-300">
+                class="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-slate-500 hover:text-rose-500 hover:bg-rose-50 rounded-[1.25rem] transition-all duration-300 w-full md:w-auto">
                 <span class="material-symbols-outlined text-[18px]">logout</span>
                 Logout
             </button>
