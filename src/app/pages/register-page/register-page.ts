@@ -47,7 +47,6 @@ export class RegisterPage implements OnInit {
   today = new Date().toISOString().split('T')[0];
   form: FormGroup;
 
-
   private readonly stepFields: Record<number, string[]> = {
     1: ['first_name', 'last_name', 'phone_number', 'date_of_birth'],
     2: ['address', 'course_id'],
@@ -68,7 +67,7 @@ export class RegisterPage implements OnInit {
         last_name: ['', [Validators.required, Validators.maxLength(100)]],
         middle_name: ['', Validators.maxLength(100)],
         date_of_birth: ['', Validators.required],
-        phone_number: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s]{7,20}$/)]],
+        phone_number: ['', [Validators.required, Validators.pattern(/^[0-9]{11}$/)]],
         address: ['', [Validators.required, Validators.maxLength(500)]],
         course_id: [null, Validators.required],
         email: ['', [Validators.required, Validators.email, Validators.maxLength(255)]],
@@ -110,6 +109,18 @@ export class RegisterPage implements OnInit {
   onDateChange(date: string): void {
     this.form.patchValue({ date_of_birth: date });
     this.form.get('date_of_birth')!.markAsTouched();
+  }
+
+  onPhoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let sanitized = input.value.replace(/\D/g, '');
+    
+    if (sanitized.length > 11) {
+      sanitized = sanitized.slice(0, 11);
+    }
+    
+    this.form.patchValue({ phone_number: sanitized });
+    input.value = sanitized;
   }
 
   onFileSelected(event: Event): void {
@@ -161,32 +172,35 @@ export class RegisterPage implements OnInit {
     this.isSubmitting = true;
 
     const v = this.form.value;
-    const payload: SignupPayload = {
-      first_name: v.first_name.trim(),
-      last_name: v.last_name.trim(),
-      middle_name: v.middle_name?.trim() || undefined,
-      date_of_birth: v.date_of_birth,
-      phone_number: v.phone_number?.trim() || undefined,
-      address: v.address.trim(),
-      course_id: Number(v.course_id),
-      email: v.email.trim().toLowerCase(),
-      password: v.password,
-      password_confirmation: v.password_confirmation,
-    };
 
-    this.authService.signup(payload).pipe(
-      switchMap(res => {
-        const applicantId = res.applicant?.id ?? res.applicant_id ?? 0;
-        return this.documentService.upload(applicantId, this.selectedFile!, 'birth_certificate');
-      }),
-      finalize(() => (this.isSubmitting = false))
-    ).subscribe({
-      next: () => {
-        this.dialog.success('Success', 'Application submitted successfully!');
-        this.router.navigate(['/login']);
-      },
-      error: err => this.handleRegistrationError(err)
-    });
+    const formData = new FormData();
+    formData.append('first_name', v.first_name.trim());
+    formData.append('last_name', v.last_name.trim());
+    formData.append('date_of_birth', v.date_of_birth);
+    formData.append('address', v.address.trim());
+    formData.append('course_id', v.course_id.toString());
+    formData.append('email', v.email.trim().toLowerCase());
+    formData.append('password', v.password);
+    formData.append('password_confirmation', v.password_confirmation);
+    
+    if (v.middle_name?.trim()) {
+      formData.append('middle_name', v.middle_name.trim());
+    }
+    if (v.phone_number?.trim()) {
+      formData.append('phone_number', v.phone_number.trim());
+    }
+
+    formData.append('birth_certificate', this.selectedFile);
+
+    this.authService.signup(formData)
+      .pipe(finalize(() => (this.isSubmitting = false)))
+      .subscribe({
+        next: () => {
+          this.dialog.success('Success', 'Application submitted successfully!');
+          this.router.navigate(['/login']);
+        },
+        error: err => this.handleRegistrationError(err)
+      });
   }
 
   private handleRegistrationError(err: any): void {

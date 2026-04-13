@@ -111,7 +111,7 @@
 
                     <div class="space-y-1">
                         <app-date-picker label="Date of Birth" placeholder="Select birthday" [maxDate]="today"
-                            (valueChange)="onDateChange($event)">
+                            [value]="f('date_of_birth').value" (valueChange)="onDateChange($event)">
                         </app-date-picker>
                         @if (hasErr('date_of_birth', 'required')) {
                         <p class="text-red-400 text-[10px] mt-0.5">Required</p>
@@ -119,13 +119,14 @@
                     </div>
                     <div class="space-y-1">
                         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Phone</label>
-                        <input formControlName="phone_number" type="tel" placeholder="09XX XXX XXXX"
+                        <input formControlName="phone_number" type="tel" placeholder="09XXXXXXXXX" maxlength="11"
+                            (input)="onPhoneInput($event)"
                             class="w-full px-3 py-2.5 bg-white/5 border rounded-xl text-white text-sm placeholder-gray-600 focus:outline-none focus:ring-1 transition-all duration-200"
                             [ngClass]="hasErr('phone_number','pattern')
                                     ? 'border-red-500/60 focus:border-red-500/60 focus:ring-red-500/30'
                                     : 'border-white/8 focus:border-blue-500/60 focus:ring-blue-500/30'">
                         @if (hasErr('phone_number','pattern')) {
-                        <p class="text-red-400 text-[10px] mt-0.5">Invalid phone number</p>
+                        <p class="text-red-400 text-[10px] mt-0.5">Must be exactly 11 digits</p>
                         }
                     </div>
 
