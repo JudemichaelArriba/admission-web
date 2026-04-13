@@ -1,7 +1,9 @@
-import { Component, OnInit, signal, inject, computed } from "@angular/core";
+import { Component, OnInit, OnDestroy, signal, inject } from "@angular/core";
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+
 import { ApplicantService } from "../../../services/applicants.service";
 import { DocumentService } from "../../../services/document.service";
 import { ExamsService } from "../../../services/exams.service";
@@ -16,74 +18,68 @@ import { Applicant } from '../../../models/applicant.model';
   imports: [CommonModule, ApplicantsTable, ApplicantsDetailsModal, FormsModule],
   templateUrl: './applicant-applications-page.html'
 })
-export class ApplicantApplicationsPage implements OnInit {
+export class ApplicantApplicationsPage implements OnInit, OnDestroy {
   private readonly applicantService = inject(ApplicantService);
   private readonly documentService = inject(DocumentService);
   private readonly examsService = inject(ExamsService);
   private readonly dialogService = inject(DialogService);
 
-  private allApplicants = signal<Applicant[]>([]);
+
+  paginatedApplicants = signal<Applicant[]>([]);
   isLoading = signal(true);
+  
+
   searchTerm = signal('');
   activeFilter = signal<'all' | 'pending' | 'approved' | 'rejected'>('all');
+
+  private searchSubject = new Subject<string>();
+  private searchSubscription!: Subscription;
+
   processingId = signal<number | null>(null);
   processingAction = signal<'approve' | 'reject' | null>(null);
-
   selectedApplicant = signal<Applicant | null>(null);
   isModalOpen = signal<boolean>(false);
 
+
   currentPage = signal(1);
-  pageSize = signal(4);
-
-  filteredApplicants = computed(() => {
-    let list = [...this.allApplicants()];
-    const search = this.searchTerm().toLowerCase().trim();
-    const filter = this.activeFilter().toLowerCase();
-
-    if (filter !== 'all') {
-      list = list.filter(a => a.status?.toLowerCase() === filter);
-    }
-
-    if (search) {
-      list = list.filter(a =>
-        a.first_name.toLowerCase().includes(search) ||
-        a.last_name.toLowerCase().includes(search) ||
-        a.id.toString().includes(search)
-      );
-    }
-
-    return list.sort((a, b) => {
-      const aIsPending = (!a.status || a.status.toLowerCase() === 'pending') ? 0 : 1;
-      const bIsPending = (!b.status || b.status.toLowerCase() === 'pending') ? 0 : 1;
-      
-      if (aIsPending !== bIsPending) {
-        return aIsPending - bIsPending;
-      }
-      
-      return b.id - a.id;
-    });
-  });
-
-  totalPages = computed(() => {
-    const total = this.filteredApplicants().length;
-    return Math.ceil(total / this.pageSize()) || 1;
-  });
-
-  paginatedApplicants = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize();
-    const end = start + this.pageSize();
-    return this.filteredApplicants().slice(start, end);
-  });
+  pageSize = signal(10); 
+  totalPages = signal(1);
+  totalRecords = signal(0);
 
   ngOnInit() {
     this.loadApplicants();
+
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      this.searchTerm.set(term);
+      this.currentPage.set(1);
+      this.loadApplicants();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.searchSubscription) {
+      this.searchSubscription.unsubscribe();
+    }
   }
 
   loadApplicants() {
     this.isLoading.set(true);
-    this.applicantService.getApplicants().subscribe({
+    
+    this.applicantService.getApplicants(
+      this.currentPage(),
+      this.pageSize(),
+      this.searchTerm(),
+      this.activeFilter()
+    ).subscribe({
       next: (res) => {
-        this.allApplicants.set(res);
+
+        this.paginatedApplicants.set(res.data);
+        this.currentPage.set(res.current_page);
+        this.totalPages.set(res.last_page);
+        this.totalRecords.set(res.total);
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
@@ -91,24 +87,26 @@ export class ApplicantApplicationsPage implements OnInit {
   }
 
   updateSearch(term: string) {
-    this.searchTerm.set(term);
-    this.currentPage.set(1);
+    this.searchSubject.next(term);
   }
 
   setFilter(filter: 'all' | 'pending' | 'approved' | 'rejected') {
     this.activeFilter.set(filter);
     this.currentPage.set(1);
+    this.loadApplicants();
   }
 
   nextPage() {
     if (this.currentPage() < this.totalPages()) {
       this.currentPage.update(p => p + 1);
+      this.loadApplicants();
     }
   }
 
   prevPage() {
     if (this.currentPage() > 1) {
       this.currentPage.update(p => p - 1);
+      this.loadApplicants();
     }
   }
 
@@ -219,7 +217,7 @@ export class ApplicantApplicationsPage implements OnInit {
   }
 
   private patchApplicant(updated: Applicant) {
-    this.allApplicants.update(list =>
+    this.paginatedApplicants.update(list =>
       list.map(a => a.id === updated.id ? { ...a, ...updated } : a)
     );
     if (this.selectedApplicant()?.id === updated.id) {

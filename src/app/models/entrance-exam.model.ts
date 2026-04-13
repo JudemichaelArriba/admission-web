@@ -1,3 +1,14 @@
+import { PaginatedResponse } from "./PaginatedResponse";
+
+
+export interface EvaluationQueueResponse {
+  exams: PaginatedResponse<EntranceExam>;
+  pending_count: number;
+  evaluated_count: number;
+}
+
+
+
 export interface ExamSchedule {
     id: number;
     exam_date: string;

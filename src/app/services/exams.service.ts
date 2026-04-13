@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { EntranceExam } from '../models/entrance-exam.model';
+import { EntranceExam, EvaluationQueueResponse } from '../models/entrance-exam.model';
 
 @Injectable({ providedIn: 'root' })
 export class ExamsService {
@@ -20,7 +20,19 @@ export class ExamsService {
     return this.http.put(`${this.API}/${examId}/evaluate`, { exam_score });
   }
 
-  getEvaluationQueue(): Observable<EntranceExam[]> {
-    return this.http.get<EntranceExam[]>(`${this.API}/evaluation-queue`);
+getEvaluationQueue(
+    page: number = 1,
+    perPage: number = 10,
+    search: string = '',
+    filter: string = 'all'
+  ): Observable<EvaluationQueueResponse> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('per_page', perPage.toString());
+
+    if (search) params = params.set('search', search);
+    if (filter && filter !== 'all') params = params.set('filter', filter);
+
+    return this.http.get<EvaluationQueueResponse>(`${this.API}/evaluation-queue`, { params });
   }
 }

@@ -64,7 +64,7 @@
 
       <div class="bg-slate-50/50 border-t border-slate-100 px-8 py-5 flex items-center justify-between">
         <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-          Total Matches <span class="text-slate-900 mx-1">{{ filteredExams().length }}</span>
+          Total Records <span class="text-slate-900 mx-1">{{ totalRecords() }}</span>
         </p>
         
         <div class="flex gap-2 items-center">
@@ -76,12 +76,12 @@
           </button>
           
           <div class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-100 min-w-[3rem] text-center">
-            {{ currentPage() }} / {{ totalPages() }}
+            {{ currentPage() }} / {{ totalPages() || 1 }}
           </div>
           
           <button 
             (click)="nextPage()" 
-            [disabled]="currentPage() === totalPages() || isLoading()"
+            [disabled]="currentPage() === totalPages() || totalPages() === 0 || isLoading()"
             class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
             Next
           </button>
