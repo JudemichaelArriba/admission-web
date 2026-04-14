@@ -1,117 +1,143 @@
-<div class="flex flex-col min-h-screen bg-[#f4f7fa] p-4 md:p-6 lg:p-8 gap-6">
+<div class="flex flex-col min-h-screen bg-slate-50 p-4 md:p-6 lg:p-8 gap-6 font-sans">
 
-  <header class="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-      style="background-image: radial-gradient(#2563eb 0.5px, transparent 0.5px); background-size: 24px 24px;"></div>
+  <header class="relative overflow-hidden bg-white/70 backdrop-blur-xl rounded-[2.5rem] border border-white/50 shadow-2xl shadow-blue-200/40">
+    <div class="absolute inset-0 opacity-[0.05] pointer-events-none"
+      style="background-image: radial-gradient(#2563eb 0.8px, transparent 0.8px); background-size: 20px 20px;"></div>
+    <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl"></div>
 
-    <div class="max-w-7xl mx-auto px-8 md:px-12 py-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6 relative z-10">
+    <div class="max-w-7xl mx-auto px-8 md:px-12 py-12 flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
       <div>
-        <div class="flex items-center gap-2 mb-2">
-          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 uppercase tracking-widest">Administrative Portal</span>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-3 py-1 rounded-full text-[10px] font-black bg-blue-600 text-white uppercase tracking-[0.2em] shadow-lg shadow-blue-200">Administrative Portal</span>
         </div>
-        <h1 class="text-3xl font-black text-slate-900 tracking-tight leading-none">Exam Scheduler</h1>
-        <p class="text-slate-500 text-sm mt-2 max-w-lg font-medium">
+        <h1 class="text-4xl font-black text-slate-900 tracking-tight leading-none">
+          Exam <span class="text-blue-600">Scheduler</span>
+        </h1>
+        <p class="text-slate-500 text-sm mt-3 max-w-lg font-medium flex items-center gap-2">
           Manage entrance exam dates, rooms, and student assignments.
         </p>
       </div>
 
-      <button  (click)="isAddModalOpen.set(true)" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-600/20 whitespace-nowrap">
-        <span class="material-symbols-outlined text-[20px]">calendar_add_on</span>
+      <button (click)="isAddModalOpen.set(true)" class="group flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-blue-600/20 whitespace-nowrap active:scale-95">
+        <span class="material-symbols-outlined text-[22px] transition-transform group-hover:rotate-12">calendar_add_on</span>
         Create Schedule
       </button>
     </div>
   </header>
 
-  <div class="max-w-7xl w-full mx-auto bg-white p-4 rounded-[1.5rem] border border-slate-100 shadow-lg shadow-slate-200/40">
+  <div class="max-w-7xl w-full mx-auto bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-white/60 shadow-lg shadow-blue-100/50">
     <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-      <div class="relative w-full md:max-w-md">
-        <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+      <div class="relative w-full md:max-w-md group">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-blue-500 group-focus-within:text-blue-600 transition-colors">search</span>
         <input
           type="text"
           [ngModel]="searchTerm()"
           (ngModelChange)="updateSearch($event)"
           placeholder="Search by room or ID..."
-          class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 font-medium" />
+          class="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-100 rounded-xl text-sm focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder:text-slate-400 font-medium shadow-sm" />
       </div>
 
-      <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto">
-        <div class="flex gap-1 bg-slate-100 p-1 rounded-xl shrink-0">
-          <button (click)="setFilter('all')" [class]="activeFilter() === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-5 py-2 text-xs font-bold rounded-lg transition-all">All</button>
-          <button (click)="setFilter('upcoming')" [class]="activeFilter() === 'upcoming' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-5 py-2 text-xs font-bold rounded-lg transition-all">Upcoming</button>
-          <button (click)="setFilter('completed')" [class]="activeFilter() === 'completed' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-5 py-2 text-xs font-bold rounded-lg transition-all">Completed</button>
+      <div class="flex items-center gap-2 w-full md:w-auto">
+        <div class="flex gap-1 bg-slate-100/50 p-1.5 rounded-xl border border-slate-200/50 w-full md:w-auto shrink-0">
+          <button (click)="setFilter('all')" [class]="activeFilter() === 'all' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-white/50 hover:text-blue-600'" class="flex-1 md:flex-none px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider">All</button>
+          <button (click)="setFilter('upcoming')" [class]="activeFilter() === 'upcoming' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-white/50 hover:text-blue-600'" class="flex-1 md:flex-none px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider">Upcoming</button>
+          <button (click)="setFilter('completed')" [class]="activeFilter() === 'completed' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'text-slate-500 hover:bg-white/50 hover:text-blue-600'" class="flex-1 md:flex-none px-6 py-2.5 text-xs font-black rounded-lg transition-all uppercase tracking-wider">Completed</button>
         </div>
       </div>
     </div>
   </div>
 
   <section class="max-w-7xl w-full mx-auto flex-grow pb-10">
-    <div class="bg-white rounded-[2rem] border border-slate-200/60 shadow-xl shadow-slate-200/30 overflow-hidden">
+    <div class="bg-white rounded-[2.5rem] border border-white shadow-2xl shadow-blue-100/60 overflow-hidden flex flex-col h-full">
       
       @if (isLoading()) {
-        <div class="flex flex-col items-center justify-center py-20 gap-4">
-          <div class="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
-          <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Fetching Schedules...</p>
+        <div class="flex flex-col items-center justify-center py-32 gap-6">
+          <div class="relative">
+            <div class="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-2 h-2 bg-blue-600 rounded-full animate-ping"></div>
+            </div>
+          </div>
+          <p class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Processing Calendars...</p>
         </div>
       } @else {
-        <app-schedule-table 
-          [schedules]="paginatedSchedules()" 
-          [deletingIds]="deletingIds()"
-          (manageStudents)="openManageStudentsModal($event)"
-          (viewDetails)="openScheduleDetails($event)"
-          (deleteSchedule)="onDeleteSchedule($event)">
-        </app-schedule-table>
+        <div class="flex-grow overflow-auto">
+          <app-schedule-table 
+            [schedules]="paginatedSchedules()" 
+            [deletingIds]="deletingIds()"
+            (manageStudents)="openManageStudentsModal($event)"
+            (viewDetails)="openScheduleDetails($event)"
+            (deleteSchedule)="onDeleteSchedule($event)">
+          </app-schedule-table>
+        </div>
       }
 
-      <div class="bg-slate-50/50 border-t border-slate-100 px-8 py-5 flex items-center justify-between">
-        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-          Total Records <span class="text-slate-900 mx-1">{{ totalRecords() }}</span>
-        </p>
+      <div class="bg-slate-50/80 backdrop-blur-md border-t border-slate-100 px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="p-2 bg-blue-100 rounded-lg">
+             <span class="material-symbols-outlined text-blue-600 text-sm">event_repeat</span>
+          </span>
+          <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">
+            Active Schedules <span class="text-blue-600 ml-1 text-sm">{{ totalRecords() }}</span>
+          </p>
+        </div>
         
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-3 items-center">
           <button 
             (click)="prevPage()" 
             [disabled]="currentPage() === 1 || isLoading()"
-            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
-            Previous
+            class="group flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-slate-600 border border-slate-200 bg-white hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 disabled:hover:border-slate-200 transition-all shadow-sm">
+            <span class="material-symbols-outlined text-sm transition-transform group-hover:-translate-x-1">chevron_left</span>
+            Prev
           </button>
           
-          <div class="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white shadow-md shadow-blue-100 min-w-[3rem] text-center">
-            {{ currentPage() }} / {{ totalPages() || 1 }}
+          <div class="px-6 py-2.5 rounded-xl text-xs font-black bg-blue-600 text-white shadow-xl shadow-blue-200 min-w-[4rem] text-center tracking-tighter">
+            {{ currentPage() }} <span class="opacity-50 mx-1">/</span> {{ totalPages() || 1 }}
           </div>
           
           <button 
             (click)="nextPage()" 
             [disabled]="currentPage() === totalPages() || totalPages() === 0 || isLoading()"
-            class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+            class="group flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black text-slate-600 border border-slate-200 bg-white hover:border-blue-400 hover:text-blue-600 disabled:opacity-30 disabled:hover:border-slate-200 transition-all shadow-sm">
             Next
+            <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">chevron_right</span>
           </button>
         </div>
       </div>
     </div>
   </section>
-
 </div>
 
 @if (isAddModalOpen()) {
-  <app-schedule-add-modal 
-    (close)="isAddModalOpen.set(false)" 
-    (saved)="handleScheduleAdded($event)">
-  </app-schedule-add-modal>
+  <div class="fixed inset-0 z-[60] flex items-center justify-center bg-blue-900/20 backdrop-blur-sm p-4">
+    <app-schedule-add-modal 
+      class="w-full max-w-2xl animate-in fade-in zoom-in duration-300"
+      (close)="isAddModalOpen.set(false)" 
+      (saved)="handleScheduleAdded($event)">
+    </app-schedule-add-modal>
+  </div>
 }
 
 @if (selectedScheduleDetails()) {
-  <app-schedule-details-modal
-    [schedule]="selectedScheduleDetails()!"
-    (close)="selectedScheduleDetails.set(null)"
-    (scheduleUpdated)="handleScheduleUpdated($event)"
-    (openAddStudent)="openManageStudentsModal($event)">
-  </app-schedule-details-modal>
+  <div class="fixed inset-0 z-[60] flex items-center justify-center bg-blue-900/20 backdrop-blur-sm p-4">
+    <app-schedule-details-modal
+      class="w-full max-w-4xl animate-in fade-in zoom-in duration-300"
+      [schedule]="selectedScheduleDetails()!"
+      (close)="selectedScheduleDetails.set(null)"
+      (scheduleUpdated)="handleScheduleUpdated($event)"
+      (openAddStudent)="openManageStudentsModal($event)">
+    </app-schedule-details-modal>
+  </div>
 }
 
 @if (selectedScheduleForStudents()) {
-  <app-schedule-add-student-modal
-    [scheduleId]="selectedScheduleForStudents()!.id"
-    (close)="selectedScheduleForStudents.set(null)"
-    (saved)="handleStudentsAdded(selectedScheduleForStudents()!.id, $event)">
-  </app-schedule-add-student-modal>
+  <div class="fixed inset-0 z-[70] flex items-center justify-center bg-blue-900/20 backdrop-blur-sm p-4">
+    <app-schedule-add-student-modal
+      class="w-full max-w-3xl animate-in fade-in zoom-in duration-300"
+      [scheduleId]="selectedScheduleForStudents()!.id"
+      (close)="selectedScheduleForStudents.set(null)"
+      (saved)="handleStudentsAdded(selectedScheduleForStudents()!.id, $event)">
+    </app-schedule-add-student-modal>
+  </div>
 }
