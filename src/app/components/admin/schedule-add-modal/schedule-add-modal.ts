@@ -100,6 +100,15 @@ export class ScheduleAddModal {
     const start24 = this.get24Hour(this.startTime);
     const end24 = this.get24Hour(this.endTime);
 
+    // Validate that the start time is not in the past
+    const selectedDateTime = new Date(`${this.form.exam_date}T${start24}:00`);
+    const now = new Date();
+
+    if (selectedDateTime < now) {
+      this.dialog.error('Invalid Time', 'The scheduled start time has already passed. Please select a future time.');
+      return;
+    }
+
     if (start24 >= end24) {
       this.dialog.error('Invalid Time', 'The end time must be after the start time.');
       return;

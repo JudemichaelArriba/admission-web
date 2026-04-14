@@ -22,13 +22,12 @@ export class ExamEvaluationPage implements OnInit, OnDestroy {
   isLoading = signal(true);
   selectedExamForEvaluation = signal<EntranceExam | null>(null);
 
-  // Search & Filter State
+
   searchTerm = signal('');
   activeFilter = signal<'all' | 'ungraded' | 'graded'>('all');
   private searchSubject = new Subject<string>();
   private searchSubscription!: Subscription;
 
-  // Pagination & Header Counts
   currentPage = signal(1);
   pageSize = signal(10);
   totalPages = signal(1);
@@ -64,13 +63,12 @@ export class ExamEvaluationPage implements OnInit, OnDestroy {
       this.activeFilter()
     ).subscribe({
       next: (res) => {
-        // Map the custom payload
+      
         this.paginatedExams.set(res.exams.data);
         this.currentPage.set(res.exams.current_page);
         this.totalPages.set(res.exams.last_page);
         this.totalRecords.set(res.exams.total);
         
-        // Update header widgets
         this.pendingCount.set(res.pending_count);
         this.evaluatedCount.set(res.evaluated_count);
         
