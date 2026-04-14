@@ -7,6 +7,7 @@ import { DialogService } from '../../../services/dialog.service';
 import { DatePickerComponent } from '../../shared/date-picker/date-picker';
 import { DropdownComponent } from '../../shared/drop-down/drop-down';
 import { DropdownOption } from '../../../models/dropdown.model';
+
 interface TimeState {
   hour: string;
   minute: string;
@@ -62,7 +63,6 @@ export class ScheduleDetailsModal implements OnInit {
     this.syncData();
   }
 
-
   private parseDateTime(datetime: string): { date: string, time: TimeState } {
     if (!datetime) return { date: '', time: { hour: '12', minute: '00', period: 'AM' } };
 
@@ -95,19 +95,22 @@ export class ScheduleDetailsModal implements OnInit {
       exam_date: startParsed.date
     });
 
-
     this.startTime = { ...startParsed.time };
     this.endTime = { ...endParsed.time };
   }
 
   toggleEdit() {
+    // Trap the edit action if the schedule is completed
+    if (!this.isEditing() && this.schedule.status === 'completed') {
+      this.dialogService.error('Locked', 'This schedule is marked as completed and cannot be modified.');
+      return;
+    }
+
     this.isEditing.set(!this.isEditing());
     if (!this.isEditing()) {
       this.syncData();
     }
   }
-
-
 
   @HostListener('document:click')
   onClickOutside() {
